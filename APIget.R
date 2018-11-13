@@ -34,10 +34,10 @@ cpiyears <- cpi$years
 
 
 rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH","IDOD","JO4C","J5DK"), "DRSI")
-rsi_vol <- to.monthly(rsi, OHLC=FALSE)
+#rsi_vol <- to.monthly(rsi_vol, OHLC=FALSE)
 
 
-# Retail sales weights (2017)
+# Retail sales volume weights (2017)
 
 # W_IDOB: Predominantly food stores = 39.0
 # W_IDOC: Total predominantly non-food stores = 41.58
@@ -49,7 +49,6 @@ rsi_vol <- to.monthly(rsi, OHLC=FALSE)
 # W_JO4C: Fuel = 9.77
 # W_J45U: Total ex-fuel = 90.23
 
-
   W_IDOB = 39.0
   W_IDOC = 41.58
   W_IDOA = 8.57
@@ -59,12 +58,86 @@ rsi_vol <- to.monthly(rsi, OHLC=FALSE)
   W_J5DK = 9.65
   W_JO4C = 9.77
   W_J45U = 90.23
+  
+  # Value Data
+  
+  # "J59v" = "All retailing including automotive fuel"
+  # "J3L2" = "All retailing excluding automotive fuel"
+  # "J3L3" = "All retailing excluding automotive fuel: Large Businesses"
+  # "J3L4" = "All retailing excluding automotive fuel: Small Businesses"
+  
+  # "EAIA"= "Predominantly food stores"
+  # "EAIB" = "Total predominantly non-food stores"
+  # "EAIN" = "Non-Specialised stores"
+  # "EAIC" = "Textile, clothing and footwear stores"
+  # "EAID" = "Households goods stores"
+  # "EAIF" = "Other Non - Food Stores" 
+  # "J58L" = "Non-Store retailing"
+  # "IYP9" = "Fuel"
+  
+  # "EAIV" = "Food Stores: Large Businesses"
+  # "EAIW" = "Food Stores: Small Businesses"
+  # "EAIO" = "Total Predominantly Non-Food Stores: Large Businesses"
+  # "EAIP" = "Total Predominantly Non-Food Stores: Small Businesses"
+  # "J58M" = "Non-Store retailing: Large Businesses"
+  # "j58N" = "Non-Store retailing: Small Businesses"
+  
+  rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIV","EAIW","EAIO","EAIP","J58M","j58N"), "DRSI")
+ # rsi_val <- to.monthly(rsi_val, OHLC=FALSE)
+  
+  # Value weights
+  
+  # "W_J59v" = "All retailing including automotive fuel"=387969
+  # "W_J3L2" = "All retailing excluding automotive fuel"=350847
+  # "W_J3L3" = "All retailing excluding automotive fuel: Large Businesses" =275477
+  # "W_J3L4" = "All retailing excluding automotive fuel: Small Businesses" =75370
+  
+  # "W_EAIA"= "Predominantly food stores" = 154446
+  # "W_EAIB" = "Total predominantly non-food stores"=163199
+  # "W_EAIN" = "Non-Food Non-Specialised stores"=34180
+  # "W_EAIC" = "Textile, clothing and footwear stores"=45728
+  # "W_EAID" = "Households goods stores"=32674
+  # "W_EAIF" = "Other Non - Food Stores" =50617
+  # "W_J58L" = "Non-Store retailing"=33202
+  # "W_IYP9" = "Fuel"= 36849
+  
+  # "W_EAIV" = "Food Stores: Large Businesses"=132149
+  # "W_EAIW" = "Food Stores: Small Businesses"=22296
+  # "W_EAIO" = "Total Predominantly Non-Food Stores: Large Businesses"=121676
+  # "W_EAIP" = "Total Predominantly Non-Food Stores: Small Businesses"=41524
+  # "W_J58M" = "Non-Store retailing: Large Businesses"=21652
+  # "W_j58N" = "Non-Store retailing: Small Businesses"=11550
+  
+  
+  W_J59v=387969
+  W_J3L2=350847
+  W_J3L3 =275477
+  W_J3L4 =75370
+  
+  W_EAIA=154446
+  W_EAIB=163199
+  W_EAIN=34180
+  W_EAIC=45728
+  W_EAID=32674
+  W_EAIF=50617
+  W_J58L=33202
+  W_IYP9= 36849
+  
+ W_EAIV=132149
+  W_EAIW=22296
+  W_EAIO=121676
+  W_EAIP=41524
+  W_J58M=21652
+  W_J58N=11550
+  
+  
+  
+  
+  
+  
 
-
-# EAFS = RSI:Predominantly food stores (val nsa):All Business Index
-# j596 = RSI:Value Not seasonally Adjusted:Non-store Retailing:All Business Index
-# J45U = RSI:All retail ex fuel:All Business:VOL SA:% change on same month a year ago
-# J43S = RSI:Value Not seasonally Adjusted:All Retailers ex fuel:All Business Index
+  
+  
 # ONS consumer prices
 
 
@@ -174,13 +247,7 @@ unemp <- to.monthly(unemp, OHLC=FALSE)
 awe <- pdfetch_ONS(c("KAI8"), "EMP")
 awe <- to.monthly(awe, OHLC=FALSE)
 
-#create xts from RSM data
-endateRSM=ISOdate(2018,09,1)
-adddateRSM=length(seq(from=ISOdate(2017,11,1), to=endateRSM, by="months"))-1 
-RSM=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!cf8:cf",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-dates <- seq(as.Date("1995-01-01"), length=285, by="months")
-RSM_xts <- xts(x=RSM, order.by=dates)
-RSM_xts <- to.monthly(RSM_xts, OHLC=FALSE)
+
 
 #merge xts's... "outer" keeps all entries for all variables, even if not updated as quickly
 databasemonthly <- merge(rsi, cpi, join = "outer")
