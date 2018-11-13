@@ -157,3 +157,7 @@ rm(rsi, cpi, unemp, gdp, awe, RSM, RSM_xts)
 
 gdp <- pdfetch_ONS(c("IHYQ"), "PGDP")
 gdp <- to.quarterly(gdp, OHLC=FALSE)
+
+###GITHUB TESTING###
+
+This is just a test
