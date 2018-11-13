@@ -8,6 +8,14 @@ library(pdfetch)
 library(xts)
 library(readxl)
 
+#CPI
+cpi <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G7/data")
+
+cpimonths <- cpi$months
+
+cpiquarters <- cpi$quarters
+
+cpiyears <- cpi$years
 
 # ONS retail sales (DRSI)
 # Volume data: RETAIL SALES INDEX: VOLUME SEASONALLY ADJUSTED PERCENTAGE CHANGE ON SAME MONTH A YEAR EARLIER
@@ -60,14 +68,7 @@ rsi_vol <- to.monthly(rsi, OHLC=FALSE)
 # ONS consumer prices
 
 
-#CPI
-cpi <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G7/data")
 
-cpimonths <- cpi$months
-
-cpiquarters <- cpi$quarters
-
-cpiyears <- cpi$years
 
 #food inflation
 cpifood <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G8/data")
