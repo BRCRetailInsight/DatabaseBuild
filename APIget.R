@@ -8,6 +8,14 @@ library(pdfetch)
 library(xts)
 library(readxl)
 
+#CPI
+cpi <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G7/data")
+
+cpimonths <- cpi$months
+
+cpiquarters <- cpi$quarters
+
+cpiyears <- cpi$years
 
 # ONS retail sales (DRSI)
 # Fetch data from ONS and convert to month only (so no days)
@@ -22,14 +30,7 @@ rsi <- to.monthly(rsi, OHLC=FALSE)
 # ONS consumer prices
 
 
-#CPI
-cpi <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G7/data")
 
-cpimonths <- cpi$months
-
-cpiquarters <- cpi$quarters
-
-cpiyears <- cpi$years
 
 #food inflation
 cpifood <- fromJSON("https://api.ons.gov.uk/dataset/MM23/timeseries/D7G8/data")
