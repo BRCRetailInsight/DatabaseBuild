@@ -10,15 +10,53 @@ library(readxl)
 
 
 # ONS retail sales (DRSI)
+# Volume data: RETAIL SALES INDEX: VOLUME SEASONALLY ADJUSTED PERCENTAGE CHANGE ON SAME MONTH A YEAR EARLIER
+# "J5EB" = "All retailing including automotive fuel"
+# "J45U" = "All retailing excluding automotive fuel"
+# "IDOB"= "Predominantly food stores"
+# "IDOC" = "Total predominantly non-food stores"
+# "IDOA" = "Non-Specialised stores"
+# "IDOG" = "Textile, clothing and footwear stores"
+# "IDOH" = "Households goods stores"
+# "IDOD" = "Other Non - Food Stores" 
+# "J5DK" = "Non-Store retailing"
+# "JO4C" = "Fuel"
+
 # Fetch data from ONS and convert to month only (so no days)
+
+
+rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH","IDOD","JO4C","J5DK"), "DRSI")
+rsi_vol <- to.monthly(rsi, OHLC=FALSE)
+
+
+# Retail sales weights (2017)
+
+# W_IDOB: Predominantly food stores = 39.0
+# W_IDOC: Total predominantly non-food stores = 41.58
+# W_IDOA: Non-Specialised stores = 8.57
+# W_IDOG: Textile, clothing and footwear stores = 11.97
+# W_IDOH: Households goods stores = 8.2
+# W_IDOD: Other Non-Food Stores = 12.84
+# W_J5DK: Non-Store retailing = 9.65
+# W_JO4C: Fuel = 9.77
+# W_J45U: Total ex-fuel = 90.23
+
+
+  W_IDOB = 39.0
+  W_IDOC = 41.58
+  W_IDOA = 8.57
+  W_IDOG = 11.97
+  W_IDOH = 8.2
+  W_IDOD = 12.84
+  W_J5DK = 9.65
+  W_JO4C = 9.77
+  W_J45U = 90.23
+
+
 # EAFS = RSI:Predominantly food stores (val nsa):All Business Index
 # j596 = RSI:Value Not seasonally Adjusted:Non-store Retailing:All Business Index
 # J45U = RSI:All retail ex fuel:All Business:VOL SA:% change on same month a year ago
 # J43S = RSI:Value Not seasonally Adjusted:All Retailers ex fuel:All Business Index
-
-rsi <- pdfetch_ONS(c("EAFS", "EAGE", "EAFU", "EAFV", "EAFW", "J596", "J45U", "J43S"), "DRSI")
-rsi <- to.monthly(rsi, OHLC=FALSE)
-
 # ONS consumer prices
 
 
