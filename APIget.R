@@ -9,8 +9,12 @@ library(xts)
 library(readxl)
 
 
-# ONS retail sales
+# ONS retail sales (DRSI)
 # Fetch data from ONS and convert to month only (so no days)
+# EAFS = RSI:Predominantly food stores (val nsa):All Business Index
+# j596 = RSI:Value Not seasonally Adjusted:Non-store Retailing:All Business Index
+# J45U = RSI:All retail ex fuel:All Business:VOL SA:% change on same month a year ago
+# J43S = RSI:Value Not seasonally Adjusted:All Retailers ex fuel:All Business Index
 
 rsi <- pdfetch_ONS(c("EAFS", "EAGE", "EAFU", "EAFV", "EAFW", "J596", "J45U", "J43S"), "DRSI")
 rsi <- to.monthly(rsi, OHLC=FALSE)
