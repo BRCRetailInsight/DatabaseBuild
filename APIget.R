@@ -75,14 +75,14 @@ rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH
   # "J58L" = "Non-Store retailing"
   # "IYP9" = "Fuel"
   
-  # "EAIV" = "Food Stores: Large Businesses"
-  # "EAIW" = "Food Stores: Small Businesses"
-  # "EAIO" = "Total Predominantly Non-Food Stores: Large Businesses"
-  # "EAIP" = "Total Predominantly Non-Food Stores: Small Businesses"
+  # "EAIT" = "Food Stores: Large Businesses"
+  # "EAIU" = "Food Stores: Small Businesses"
+  # "EAIV" = "Total Predominantly Non-Food Stores: Large Businesses"
+  # "EAIW" = "Total Predominantly Non-Food Stores: Small Businesses"
   # "J58M" = "Non-Store retailing: Large Businesses"
   # "j58N" = "Non-Store retailing: Small Businesses"
   
-  rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIV","EAIW","EAIO","EAIP","J58M","j58N"), "DRSI")
+  rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIT","EAIU","EAIV","EAIW","J58M","j58N"), "DRSI")
  # rsi_val <- to.monthly(rsi_val, OHLC=FALSE)
   
   # Value weights
@@ -101,10 +101,10 @@ rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH
   # "W_J58L" = "Non-Store retailing"=33202
   # "W_IYP9" = "Fuel"= 36849
   
-  # "W_EAIV" = "Food Stores: Large Businesses"=132149
-  # "W_EAIW" = "Food Stores: Small Businesses"=22296
-  # "W_EAIO" = "Total Predominantly Non-Food Stores: Large Businesses"=121676
-  # "W_EAIP" = "Total Predominantly Non-Food Stores: Small Businesses"=41524
+  # "W_EAIT" = "Food Stores: Large Businesses"=132149
+  # "W_EAIU" = "Food Stores: Small Businesses"=22296
+  # "W_EAIV" = "Total Predominantly Non-Food Stores: Large Businesses"=121676
+  # "W_EAIW" = "Total Predominantly Non-Food Stores: Small Businesses"=41524
   # "W_J58M" = "Non-Store retailing: Large Businesses"=21652
   # "W_j58N" = "Non-Store retailing: Small Businesses"=11550
   
@@ -123,10 +123,10 @@ rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH
   W_J58L=33202
   W_IYP9= 36849
   
- W_EAIV=132149
-  W_EAIW=22296
-  W_EAIO=121676
-  W_EAIP=41524
+ W_EAIT=132149
+  W_EAIU=22296
+  W_EAIV=121676
+  W_EAIW=41524
   W_J58M=21652
   W_J58N=11550
   
