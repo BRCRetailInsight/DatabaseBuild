@@ -82,7 +82,7 @@ rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH
   # "J58M" = "Non-Store retailing: Large Businesses"
   # "j58N" = "Non-Store retailing: Small Businesses"
   
-  rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIT","EAIU","EAIV","EAIW","J58M","j58N"), "DRSI")
+  rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIT","EAIU","EAIV","EAIW","J58M","j58N","KP3T"), "DRSI")
  # rsi_val <- to.monthly(rsi_val, OHLC=FALSE)
   
   # Value weights
