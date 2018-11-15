@@ -7,7 +7,6 @@ library(pdfetch)
 library(xts)
 library(readxl)
 
-
 # ONS retail sales (DRSI)
 # Volume data: RETAIL SALES INDEX: VOLUME SEASONALLY ADJUSTED PERCENTAGE CHANGE ON SAME MONTH A YEAR EARLIER
 # "J5EB" = "All retailing including automotive fuel"

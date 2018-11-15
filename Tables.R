@@ -1,8 +1,13 @@
 
 
-#Create tables
+#run two files which collate the data
+#BUt FIRST check "enddateRSM" in the BRC local data file -> it will need manually changing!!
 source("BRCLocalData.R")
 source("APIgetRSI.R")
+
+
+
+#Create table
 
 tbl_1=as.table(matrix(c(as.character(round(RSM_xts$rsm_tot[nrow(RSM_xts)],1)),
                         as.character(round(RSM_xts$rsm_tot[nrow(RSM_xts)-1],1)),
@@ -32,4 +37,5 @@ tbl_1=as.table(matrix(c(as.character(round(RSM_xts$rsm_tot[nrow(RSM_xts)],1)),
 colnames(tbl_1)=c("This Month","Last Month")
 rownames(tbl_1)=c("Total RSM","Total RSI (J3L2)","Food RSM","Food RSI (EAIA)","RSI Large Businesses(J3L3)","RSI Small Businesses (J3L4)","RSI Large Food Businesses (EAIT)","RSI Small Food Businesses (EAIU)", "RSI Internet Sales (K3PT)", "RSM Online Non-Food")
 
+#output to excel
 write.csv(tbl_1,paste("RSI Comparison",Sys.Date(),".csv"))
