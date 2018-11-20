@@ -1,11 +1,10 @@
 library(dplyr)
 library(pdfetch)
 library(xts)
-library(readxl)
 
 # ONS consumer price inflation
 
-#### ONS Consumer Price Inflation Annual Data (MM23) ####
+#### ONS Consumer Price Inflation Annual Data (MM23) - Definitions ####
 
 # "D7G7" = All Items
 
@@ -68,7 +67,7 @@ library(readxl)
 # "D7O8" = Personal Effects
 # "D7GN" = Tobacco
 
-#Get CPI Data
+#### Get CPI Data ####
 cpi <- pdfetch_ONS(c("D7G7", 
                      "D7G8", "D7GM", 
                      "L7JM", "L7JN", "L7JP", "L7JT", "L7JU", "D7GL", "D7HO", "L7L6",
@@ -83,7 +82,7 @@ cpi <- pdfetch_ONS(c("D7G7",
                      ), "MM23")
 
 
-#### ONS Consumer Price Inflation Weights (MM23) ####
+#### ONS Consumer Price Inflation Weights (MM23) - Definitions ####
 
 # "CHZQ" = All Items
 
@@ -146,7 +145,7 @@ cpi <- pdfetch_ONS(c("D7G7",
 # "CJVX" = Personal Effects
 # "CJWP" = Tobacco
 
-#Get CPI Weights
+#### Get CPI Weights ####
 w_cpi <- pdfetch_ONS(c("CHZQ", 
                        "CHZR", "CJUZ", 
                        "L83B", "L83C", "L83S", "L844", "L846", "CJUY", "CJWI", "L859", 
@@ -161,33 +160,102 @@ w_cpi <- pdfetch_ONS(c("CHZQ",
                        ), "MM23")
 
 
-#merge and fill in blank datapoints between weights changes (fills in points after last recorded point)
+#merge and fill in blank datapoints between weights changes (fills in points after last recorded point & before first recorded point)
 cpi <- merge(cpi, w_cpi, join = "outer")
 cpi <- na.locf(cpi)
-#cpi <- na.locf(cpi, fromLast = TRUE)
+cpi <- na.locf(cpi, fromLast = TRUE)
 
-#### Build variables to match SPI ####
+#### Build CPI variables to match SPI ####
 
 #All Items#
 cpi_all <- cpi$D7G7
+colnames(cpi_all) <- "CPI"
 
-#FOOD#
-cpi_food <- (cpi$D7G8 * (cpi$CHZR / (cpi$CHZR + cpi$CJUZ)) + (cpi$D7GM * (cpi$CJUZ / (cpi$CHZR + cpi$CJUZ))))
+#Food#
+cpi_food <- (cpi$D7G8 * (cpi$CHZR / (cpi$CHZR + cpi$CJUZ)) + 
+             cpi$D7GM * (cpi$CJUZ / (cpi$CHZR + cpi$CJUZ)))
+colnames(cpi_food) <- "CPI"
 
 #Ambient Food#
-
+cpi_ambient <- (cpi$D7GM * (cpi$CJUZ / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7JM * (cpi$L83B / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7JN * (cpi$L83C / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7JP * (cpi$L83S / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7JT * (cpi$L844 / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7JU * (cpi$L846 / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$D7GL * (cpi$CJUY / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$D7HO * (cpi$CJWI / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
+                cpi$L7L6 * (cpi$L859 / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)))
+colnames(cpi_ambient) <- "CPI"
 
 #Fresh Food#
+cpi_fresh <- (cpi$L7JO * (cpi$L83H / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$L7JQ * (cpi$L83T / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$D7HJ * (cpi$CJWD / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$D7HM * (cpi$CJWG / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$D7HI * (cpi$CJWC / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$D7HK * (cpi$CJWE / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$L7KS * (cpi$L84P / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$L7L5 * (cpi$L83H / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
+              cpi$L7L2 * (cpi$L853 / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)))
+colnames(cpi_fresh) <- "CPI"
 
+#Clothing & Footwear#
+cpi_clothing <- cpi$D7GA
+colnames(cpi_clothing) <- "CPI"
 
-#### Plot CPI Variables ####
+#Health & Beauty#
+cpi_health <- (cpi$D7JD * (cpi$CJYO / (cpi$CJYO + cpi$CJYA)) +
+               cpi$D7NP * (cpi$CJYA / (cpi$CJYO + cpi$CJYA)))
+colnames(cpi_health) <- "CPI"
 
-cpi_plot_1 <- merge(cpi_all, cpi_food, join = "outer")
-plot(cpi_plot_1, plot.type="s", legend.loc = "topleft")
+#DIY, Gardening & Hardware#
+cpi_diy <- cpi$D7GY
+colnames(cpi_diy) <- "CPI"
 
+#Furniture & Flooring#
+cpi_furniture <- (cpi$D7GU * (cpi$CJVG / (cpi$CJVG + cpi$CJVH)) +
+                  cpi$D7GV * (cpi$CJVH / (cpi$CJVG + cpi$CJVH)))
+colnames(cpi_furniture) <- "CPI"
 
-####  scrap  ####
+#Electricals#
+cpi_electricals <- (cpi$D7IF * (cpi$CJXI / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
+                    cpi$D7IZ * (cpi$CJYC / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
+                    cpi$D7J2 * (cpi$CJYD / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
+                    cpi$D7J3 * (cpi$CJYE / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)))
+colnames(cpi_electricals) <- "CPI"
 
-#fill missing data with last datapoint...
-xts_last <- na.locf(xts2)
+#Books, Stationery & Home Entertainment#
+cpi_books <- (cpi$D7O3 * (cpi$ICVT / (cpi$ICVT + cpi$CJYF)) +
+              cpi$D7J6 * (cpi$CJYF / (cpi$ICVT + cpi$CJYF)))
+colnames(cpi_books) <- "CPI"
 
+#Other Non-Food#
+cpi_othnonfood <- (cpi$D7NX * (cpi$ICVP / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                   cpi$D7NY * (cpi$ICVQ / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                   cpi$L7SL * (cpi$L8CZ / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                   cpi$L7SM * (cpi$L8D2 / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                   cpi$D7O8 * (cpi$CJVX / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                   cpi$D7GN * (cpi$CJWP / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)))
+colnames(cpi_othnonfood) <- "CPI"
+
+#Non-Food#
+cpi_nonfood <- (cpi$D7GA * (cpi$CHZT / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7JD * (cpi$CJYO / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7NP * (cpi$CJYA / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7GY * (cpi$CJVK / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7GU * (cpi$CJVG / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7GV * (cpi$CJVH / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7IF * (cpi$CJXI / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7IZ * (cpi$CJYC / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7J2 * (cpi$CJYD / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7J3 * (cpi$CJYE / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7O3 * (cpi$ICVT / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7J6 * (cpi$CJYF / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7NX * (cpi$ICVP / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7NY * (cpi$ICVQ / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$L7SL * (cpi$L8CZ / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$L7SM * (cpi$L8D2 / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7O8 * (cpi$CJVX / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
+                cpi$D7GN * (cpi$CJWP / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)))
+colnames(cpi_nonfood) <- "CPI"
