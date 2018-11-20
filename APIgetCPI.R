@@ -259,14 +259,3 @@ cpi_nonfood <- (cpi$D7GA * (cpi$CHZT / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJV
                 cpi$D7O8 * (cpi$CJVX / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
                 cpi$D7GN * (cpi$CJWP / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)))
 colnames(cpi_nonfood) <- "CPI"
-
-
-
-
-#### Plot CPI vs SPI Variables ####
-
-Food_Inflation <- merge(cpi_food, spi_food, join = "outer")
-plot(Food_Inflation, plot.type="s", legend.loc = "topleft")
-
-Clothing_Inflation <- merge(cpi_clothing, spi_clothes, join = "outer")
-plot(Clothing_Inflation, plot.type="s", legend.loc = "topleft")
