@@ -4,7 +4,7 @@ library(xts)
 library(dplyr)
 library(pdfetch)
 
-#### Get Monthly GDP Data ####
+#### Monthly GVA Data ####
 
 # Time Series Definitions
 
@@ -23,11 +23,11 @@ GVAmonthly_mom <- GVAmonthly$ECYX
 
 # Time Series Definitions
 
-# "ABMM" = Quarterly GVA (CVM SA £m)
+# "ABMI" = Quarterly GDP (CVM SA £m)
 
-#GVA at Basic Prices - qna
-gvaquarterly <- pdfetch_ONS(c("ABMM"), "qna")
-colnames(gvaquarterly) <- "Whole Economy"
+#GDP at Basic Prices - qna
+gdpquarterly <- pdfetch_ONS(c("ABMI"), "qna")
+colnames(gdpquarterly) <- "GDP Whole Economy"
 
 #### ONS Quartlery GVA, from: "GDP output approach - Low Level Aggregates" ####
 
@@ -41,11 +41,11 @@ gva_all <- read_excel(gva_all, sheet = 3, range = "D46:D132")
 dates <- seq(as.Date("1997-03-20"), length = nrow(gva_all), by = "quarters")
 dates <- LastDayInMonth(dates)
 gva_all <- xts(x = gva_all, order.by=dates)
-colnames(gva_all) <- "Whole Economy"
+colnames(gva_all) <- "GVA Whole Economy"
 
 #GVA Retail (CP £m)
 gva_retail <- "gva_all.xls"
 gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
 gva_retail <- xts(x = gva_retail, order.by=dates)
-colnames(gva_retail) <- "Retail"
+colnames(gva_retail) <- "GVA Retail"
 
