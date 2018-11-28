@@ -25,9 +25,15 @@ GVAmonthly_mom <- GVAmonthly$ECYX
 
 # "ABMI" = Quarterly GDP (CVM SA £m)
 
-#GDP at Basic Prices - qna
-gdpquarterly <- pdfetch_ONS(c("ABMI"), "qna")
-colnames(gdpquarterly) <- "GDP Whole Economy"
+#GDP at Basic Prices and GDP per head at Basic Prices- qna
+gdpquarterly <- pdfetch_ONS(c("ABMI","IHXW"), "qna")
+colnames(gdpquarterly) <- c("GDP Whole Economy","GDP per Head Whole Economy")
+
+#GDP and GDP per head at Basic Prices - BB
+gdpannual <- pdfetch_ONS(c("ABMI","IHXW"), "BB")
+colnames(gdpannual) <- c("GDP Whole Economy","GDP per Head Whole Economy")
+
+
 
 #### ONS Quartlery GVA, from: "GDP output approach - Low Level Aggregates" ####
 
@@ -48,4 +54,5 @@ gva_retail <- "gva_all.xls"
 gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
 gva_retail <- xts(x = gva_retail, order.by=dates)
 colnames(gva_retail) <- "GVA Retail"
+
 
