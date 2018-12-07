@@ -65,7 +65,7 @@ colnames(selfjobs_retail) <- "Self-Employed Jobs Retail"
 
 #### Get unemployment Data ####
 
-#Time Series - Definitions
+#Time Series - Unemployment Definitions
 # "MGSX" = Unemployment Rate UK (SA)
 # "ZSFB" = Unemployment Rate Northern Ireland (SA)
 # "YCNM" = Unemployment Rate Wales (SA)
@@ -82,6 +82,24 @@ colnames(selfjobs_retail) <- "Self-Employed Jobs Retail"
 # "YCNJ" = Unemployment Rate South East (SA)
 
 unemp <- pdfetch_ONS(c("MGSX", "YCNC", "ZSFB", "YCNM", "YCNL", "YCNN", "YCNE", "YCND", "YCNG", "YCNF", "YCNI", "YCNH", "YCNK", "YCNJ"), "lms")
+
+#Time Series - Employment Definitions
+# "YCBE" = Employment Total UK (SA)
+# "YCJP" = Employment Total North East (SA)
+# "YCJQ" = Employment Total North West (SA)
+# "YCJR" = Employment Total Yorkshire & the Humber (SA)
+# "YCJS" = Employment Total East Midlands (SA)
+# "YCJT" = Employment Total West Midlands (SA)
+# "YCJU" = Employment Total East (SA)
+# "YCJV" = Employment Total London (SA)
+# "YCJW" = Employment Total South East (SA)
+# "YCJX" = Employment Total South West (SA)
+# "YCJY" = Employment Total England (SA)
+# "YCJZ" = Employment Total Wales (SA)
+# "YCKA" = Employment Total Scotland (SA)
+# "ZSFG" = Employment Total Northern Ireland (SA)
+
+employ <- pdfetch_ONS(c("YCBE", "YCJP", "YCJQ", "YCJR", "YCJS", "YCJT", "YCJU", "YCJV", "YCJW", "YCJX", "YCJY", "YCJZ", "YCKA", "ZSFG"), "lms")
 
 #### Get NOMIS Data ####
 
