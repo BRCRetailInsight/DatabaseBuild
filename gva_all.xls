@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--[if IE 8]>         <html class="no-js ie9 lt-ie9" lang="en-US"> <![endif]-->
+<!--[if IE 9 ]>        <html class="no-js ie9" lang="en-US"> <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js" lang="en-US"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Backup.ONS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- JM Twitter Cards by Julien Maury 9.4 -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="We&#8217;re having some problems&#8230;">
+<meta name="twitter:description" content="These are the Office for National Statistics contingency pagesThe fact that you are here means we are currently experiencing problems with our regular website and are working to resolve the issues a">
+<meta name="twitter:image" content="https://g.twimg.com/Twitter_logo_blue.png">
+<!-- /JM Twitter Cards by Julien Maury 9.4 -->
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/atom+xml" title="Backup.ONS &raquo; We&#8217;re having some problems&#8230; Comments Feed" href="https://backup.ons.gov.uk/welcome-to-the-office-for-national-statistics-contingency-pages/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/11\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/backup.ons.gov.uk\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.8"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56760,9792,65039],[55358,56760,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='main-css'  href='https://backup.ons.gov.uk/wp-content/themes/ons-datastories/build/main.min.css?ver=4.9.8' type='text/css' media='all' />
+<script type='text/javascript' src='https://backup.ons.gov.uk/wp-content/themes/ons-datastories/build/node_modules/jquery/dist/jquery.min.js?ver=4.9.8'></script>
+<script type='text/javascript' src='https://backup.ons.gov.uk/wp-content/themes/ons-datastories/assets/js/head/modernizr.min.js?ver=4.9.8'></script>
+<link rel="canonical" href="https://backup.ons.gov.uk/" />
+<link rel="alternate" type="application/json+oembed" href="https://backup.ons.gov.uk/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbackup.ons.gov.uk%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://backup.ons.gov.uk/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fbackup.ons.gov.uk%2F&#038;format=xml" />
+<script src='https://visual.ons.gov.uk/?dm=7fdd47a5bc677590c0ab5d2833740ec6&amp;action=load&amp;blogid=3&amp;siteid=1&amp;t=255337231&amp;back=https%3A%2F%2Fbackup.ons.gov.uk%2F' type='text/javascript'></script>    <link rel="alternate" type="application/atom+xml" title="Backup.ONS Feed" href="https://backup.ons.gov.uk/feed/">
+    
+  <link rel="alternate" type="application/rss+xml" title="Backup.ONS Feed" href="https://backup.ons.gov.uk/feed/">
+  <link rel="shortcut icon" type="image/x-icon" href="https://backup.ons.gov.uk/wp-content/themes/ons-datastories/assets/img/shortcut-icon.png">
+</head>
+<body class="home page-template-default page page-id-4">
+
+  <!--[if IE 8]><div class="alert"><p>You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p></div><![endif]-->
+
+  
+  <header class="banner" role="banner">
+    <div class="container">
+      <div class="row">
+        <div class="logo col-sm-8">
+          <a href="https://backup.ons.gov.uk"><h1 class="brand">Office for National Statistics</h1></a>
+        </div>
+        <div class="header-search col-sm-4">
+          <form role="search" method="get" class="search__form" action="https://backup.ons.gov.uk/">
+  <input type="search" value="" name="s" class="search__input" placeholder="Search Visual.ONS">
+  <label class="visuallyhidden">Search Visual.ONS</label>
+  <button type="submit" class="search__button">
+    <span class="hide">Search</span>
+    <span class="icon icon-search--light"></span>
+  </button>
+</form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="nav-contain">
+    <div class="container">
+      <div class="row">
+        <nav class="navbar" role="navigation">
+  <button data-target="#theme-nav-main" data-toggle="collapse" type="button" class="navbar-toggle">Menu</button>
+  <div id="theme-nav-main" class="navbar-collapse collapse" role="menu">
+    <div class="menu-main-container"><ul id="menu-main" class="nav navbar-nav"><li id="menu-item-6" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-4 current_page_item menu-item-6"><a href="https://backup.ons.gov.uk/">Home</a></li>
+<li id="menu-item-8" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-8"><a href="https://backup.ons.gov.uk/category/releases/">Releases</a></li>
+<li id="menu-item-547" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-547"><a href="https://backup.ons.gov.uk/release-calendar/">Release Calendar</a></li>
+<li id="menu-item-35" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-35"><a href="https://backup.ons.gov.uk/contact-us/">Contact Us</a></li>
+<li id="menu-item-16" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-16"><a href="https://backup.ons.gov.uk/taking-part-in-a-survey/">Taking part in a survey?</a></li>
+</ul></div>  </div>
+</nav>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap container">
+    <div class="content row">
+      <div class="main" role="main">
+        <div class="col-md-12">
+    <header class="site-title homepage-title">
+      <hgroup>
+        <h1>Backup.ONS</h1>
+        <h2>The fact that you are here means we are currently experiencing problems with our regular website and are working to resolve the issues as soon as possible.</h2>
+      </hgroup>
+    </header>
+</div>
+
+<div class="col-md-12">
+    <div class="latest-posts">
+        <header class="row">
+            <h3 class="col-md-12">
+                Latest posts
+                <div class="pull-right view-all">
+                    <a href="https://backup.ons.gov.uk/">View all posts</a>
+                </div>
+            </h3>
+        </header>
+        <div class="latest-posts-container">
+                        <div class="latest-post">
+                <a href="https://backup.ons.gov.uk/2018/12/05/children-and-young-peoples-experience-of-loneliness/">
+                    <figure>
+                                            </figure>
+                    <article>
+                        <h3>
+                            Children and young people&#8217;s experience of loneliness                        </h3>
+                    </article>
+                </a>
+            </div>
+                        <div class="latest-post">
+                <a href="https://backup.ons.gov.uk/2018/12/05/national-measures-of-loneliness/">
+                    <figure>
+                                            </figure>
+                    <article>
+                        <h3>
+                            National measures of loneliness                        </h3>
+                    </article>
+                </a>
+            </div>
+                        <div class="latest-post">
+                <a href="https://backup.ons.gov.uk/2018/12/04/foreign-direct-investment-involving-uk-companies-2017/">
+                    <figure>
+                                            </figure>
+                    <article>
+                        <h3>
+                            Foreign direct investment involving UK companies: 2017                        </h3>
+                    </article>
+                </a>
+            </div>
+                        <div class="latest-post">
+                <a href="https://backup.ons.gov.uk/2018/12/04/alcohol-specific-deaths-in-uk-registered-in-2017/">
+                    <figure>
+                                            </figure>
+                    <article>
+                        <h3>
+                            Alcohol-specific deaths in UK: registered in 2017                        </h3>
+                    </article>
+                </a>
+            </div>
+                        <div class="latest-post">
+                <a href="https://backup.ons.gov.uk/2018/12/04/mergers-and-acquisitions-involving-uk-companies-july-to-september-2018/">
+                    <figure>
+                                            </figure>
+                    <article>
+                        <h3>
+                            Mergers and acquisitions involving UK companies, July to September 2018                        </h3>
+                    </article>
+                </a>
+            </div>
+                    </div>
+    </div>
+</div>
+      </div>
+    </div>
+  </div>
+
+          <footer class="content-info" role="contentinfo">
+        <div class="container">
+            <nav class="row">
+  <div class="col-sm-4">
+      </div>
+  <div class="col-sm-4">
+      </div>
+  <div class="col-sm-4">
+      </div>
+</nav>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="license">
+      <img alt="OGL" width="60" src="https://www.ons.gov.uk/img/ogl.png">
+      <p>All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/">Open Government Licence v3.0</a>, except where otherwise stated</p>
+    </div>
+  </div>
+</div>        </div>
+      </footer>
+      <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', '']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    // Add event tracking to external links
+    $('a[href]').each(function () {
+        var e = $(this)
+        if (e.attr('href').match(/^https?:\/\//) &&
+            !e.attr('href').match(new RegExp('^https?://'+window.location.host+'/')) &&
+            !e.hasClass('no-external')
+        ) {
+            e.addClass('external')
+        }
+    })
+
+    $('a[href$=".pdf"],a[href$=".doc"],a[href$=".csv"],a[href$=".xls"]').addClass('doc-download');
+
+    $('body').on('click', 'a.doc-download, a[href*="/wp-content/uploads/"], a[href*="/documents/"]', function(){
+         // ga('send', 'event', 'button', 'click', 'Download');
+         _gaq.push(['_trackEvent', 'button', 'click', 'Download']);
+    })
+
+
+  </script>
+<script type='text/javascript' src='https://backup.ons.gov.uk/wp-content/themes/ons-datastories/build/main.min.js?ver=4.9.8'></script>
+<script type='text/javascript' src='https://backup.ons.gov.uk/wp-includes/js/wp-embed.min.js?ver=4.9.8'></script>
+
+</body>
+</html>
