@@ -11,7 +11,7 @@ library(utils)
 
 setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
 
-#### Bank of England Time Series Creation ####
+#### Bank of England Time Series ####
 
 # Secured lending
 boe_secured <- pdfetch_BOE("LPMVTVJ", from = "1993-01-01", to = Sys.Date())
@@ -33,7 +33,7 @@ colnames(boe_house) <- "Mortgage Approvals"
 boe_gbp <- pdfetch_BOE("XUMABK67", from = "1980-01-01", to = Sys.Date())
 colnames(boe_gbp) <- "Sterling Effective Exchange Rate"
 
-#### Monthly GVA Data ####
+#### Monthly GDP Data ####
 
 # Time Series Definitions
 
@@ -47,8 +47,10 @@ GVAmonthly_yoy <- GVAmonthly$ED2R
 
 GVAmonthly_mom <- GVAmonthly$ECYX
 
+colnames(GVAmonthly_yoy) <- "GVA Monthly (% YoY)"
+colnames(GVAmonthly_mom) <- "GVA Monthly (% MoM)"
 
-#### ONS Quarterly GDP Data - qna ####
+#### Quarterly GDP Data ####
 
 # Time Series Definitions
 
@@ -56,9 +58,9 @@ GVAmonthly_mom <- GVAmonthly$ECYX
 
 #GDP at Basic Prices - qna
 gdpquarterly <- pdfetch_ONS(c("ABMI"), "qna")
-colnames(gdpquarterly) <- "GDP Whole Economy"
+colnames(gdpquarterly) <- "GDP Quarterly - Whole Economy (?m)"
 
-#### ONS Quartlery GVA, from: "GDP output approach - Low Level Aggregates" ####
+#### Quartlery GVA, from: "GDP output approach - Low Level Aggregates" ####
 
 #GVA Whole Economy (CP £m)
 url <- "https://www.ons.gov.uk/file?uri=/economy/grossdomesticproductgdp/datasets/ukgdpolowlevelaggregates/current/gdplla.xls"
@@ -69,18 +71,18 @@ gva_all <- read_excel(gva_all, sheet = 3, range = "D46:D132")
 
 dates <- seq(as.Date("1997-03-20"), length = nrow(gva_all), by = "quarters")
 dates <- LastDayInMonth(dates)
-gva_all <- xts(x = gva_all, order.by=dates)
-colnames(gva_all) <- "GVA Whole Economy"
+GVAquarterly_all <- xts(x = gva_all, order.by=dates)
+colnames(GVAquarterly_all) <- "GVA Quarterly - Whole Economy (?m)"
 
 #GVA Retail (CP £m)
 gva_retail <- "gva_all.xls"
 gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
-gva_retail <- xts(x = gva_retail, order.by=dates)
-colnames(gva_retail) <- "GVA Retail"
+GVAquarterly_retail <- xts(x = gva_retail, order.by=dates)
+colnames(GVAquarterly_retail) <- "GVA Quarterly - Retail (?m)"
 
-# ONS Average Weekly Earnings - lms
+#### Average Weekly Earnings ####
 
-#### Time Series Definitions ####
+# Time Series Definitions
 
 # "KAB9" = Total Pay
 # "KAC2" = Total Pay YoY Growth
@@ -95,11 +97,16 @@ colnames(gva_retail) <- "GVA Retail"
 # "A2F9" = Real Regular Pay YoY Growth
 # "A2FA" = Real Regular Pay 3-month average YoY Growth
 
-#### Get AWE Data ####
+# Get AWE Data
 
 awe <- pdfetch_ONS(c("KAB9", "KAC2", "KAC3", "KAI7", "KAI8", "KAI9", "A3WX", "A3WV", "A3WW", "A2FC", "A2F9", "A2FA"), "lms")
 
-#### Get JOBS03 & JOBS04 Data ####
+colnames(awe) <- c("Total Pay", "Total Pay YoY Growth", "Total Pay 3-month average YoY Growth",
+                   "Regular Pay", "Regular Pay YoY Growth", "Regular Pay 3-month average YoY Growth",
+                   "Real Total Pay", "Real Total Pay YoY Growth", "Real Total Pay 3-month average YoY Growth",
+                   "Real Regular Pay", "Real Regular Pay YoY Growth", "Real Regular Pay 3-month average YoY Growth")
+
+#### JOBS03 & JOBS04 Data ####
 
 #Employee Jobs
 url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/employeejobsbyindustryjobs03/current/jobs03sep2018.xls"
@@ -110,12 +117,12 @@ empjobs_all <- read_excel(empjobs, sheet = 2, range = "CH6:CH167")
 
 dates <- seq(as.Date("1978-06-20"), length = nrow(empjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
-empjobs_all <- xts(x = empjobs_all, order.by=dates)
-colnames(empjobs_all) <- "Employee Jobs All"
+empjobsquarterly_all <- xts(x = empjobs_all, order.by=dates)
+colnames(empjobsquarterly_all) <- "Employee Jobs - Whole Economy"
 
 empjobs_retail <- read_excel(empjobs, sheet = 2, range = "AO6:AO167")
-empjobs_retail <- xts(x = empjobs_retail, order.by=dates)
-colnames(empjobs_retail) <- "Employee Jobs Retail"
+empjobsquarterly_retail <- xts(x = empjobs_retail, order.by=dates)
+colnames(empjobsquarterly_retail) <- "Employee Jobs - Retail"
 
 #Self-Employed Jobs
 url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/selfemploymentjobsbyindustryjobs04/current/jobs04sep2018.xls"
@@ -126,14 +133,14 @@ selfjobs_all <- read_excel(selfjobs, sheet = 2, range = "CH6:CH96")
 
 dates <- seq(as.Date("1996-03-20"), length = nrow(selfjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
-selfjobs_all <- xts(x = selfjobs_all, order.by=dates)
-colnames(selfjobs_all) <- "Self-Employed Jobs All"
+selfjobsquarterly_all <- xts(x = selfjobs_all, order.by=dates)
+colnames(selfjobsquarterly_all) <- "Self-Employed Jobs - Whole Economy"
 
 selfjobs_retail <- read_excel(selfjobs, sheet = 2, range = "AO6:AO96")
-selfjobs_retail <- xts(x = selfjobs_retail, order.by=dates)
-colnames(selfjobs_retail) <- "Self-Employed Jobs Retail"
+selfjobsquarterly_retail <- xts(x = selfjobs_retail, order.by=dates)
+colnames(selfjobsquarterly_retail) <- "Self-Employed Jobs - Retail"
 
-#### Get unemployment Data ####
+#### Unemployment & Employment Data ####
 
 #Time Series - Unemployment Definitions
 # "MGSX" = Unemployment Rate UK (SA)
@@ -153,6 +160,12 @@ colnames(selfjobs_retail) <- "Self-Employed Jobs Retail"
 
 unemp <- pdfetch_ONS(c("MGSX", "YCNC", "ZSFB", "YCNM", "YCNL", "YCNN", "YCNE", "YCND", "YCNG", "YCNF", "YCNI", "YCNH", "YCNK", "YCNJ"), "lms")
 
+colnames(unemp) <- c("Unemployment Rate UK", "Unemployment Rate Northern Ireland", "Unemployment Rate Wales",
+                     "Unemployment Rate England", "Unemployment Rate Scotland", "Unemployment Rate Yorkshire & the Humber",
+                     "Unemployment Rate North West", "Unemployment Rate North East", "Unemployment Rate West Midlands",
+                     "Unemployment Rate East Midlands", "Unemployment Rate London", "Unemployment Rate East",
+                     "Unemployment Rate South West", "Unemployment Rate South East")
+
 #Time Series - Employment Definitions
 # "YCBE" = Employment Total UK (SA)
 # "YCJP" = Employment Total North East (SA)
@@ -171,7 +184,14 @@ unemp <- pdfetch_ONS(c("MGSX", "YCNC", "ZSFB", "YCNM", "YCNL", "YCNN", "YCNE", "
 
 employ <- pdfetch_ONS(c("YCBE", "YCJP", "YCJQ", "YCJR", "YCJS", "YCJT", "YCJU", "YCJV", "YCJW", "YCJX", "YCJY", "YCJZ", "YCKA", "ZSFG"), "lms")
 
-#### Get NOMIS Data ####
+colnames(employ) <- c("Employment Total UK", "Employment Total North East", "Employment Total North West",
+                     "Employment Total Yorkshire & the Humber", "Employment Total East Midlands", "Employment Total West Midlands",
+                     "Employment Total East", "Employment Total London", "Employment Total South East",
+                     "Employment Total South West", "Employment Total England", "Employment Total Wales",
+                     "Employment Total Scotland", "Employment Total Northern Ireland")
+
+
+#### NOMIS Data ####
 
 #Workforce Jobs
 nomiswfjobs <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_189_1.data.json?geography=2092957699,2092957698,2092957701,2092957700&industry=146800687&employment_status=1&measure=1,2&measures=20100")
@@ -185,7 +205,7 @@ nomisunits <- as.data.frame(nomisunits$obs)
 nomisenterprises <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_142_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100")
 nomisenterprises <- as.data.frame(nomisenterprises$obs)
 
-#### Get ASHE Data ####
+#### ASHE Data ####
 
 # ASHE Table 4.6a: Hourly pay - Excluding overtime (£)
 
@@ -213,8 +233,6 @@ AsheFemaleFullAll <- read_excel("PROV - SIC07 Industry (2) SIC2007 Table 4.6a   
 AsheFemaleFullRetail <- read_excel("PROV - SIC07 Industry (2) SIC2007 Table 4.6a   Hourly pay - Excluding overtime 2018.xls", sheet = 9, range = "A60:E60", col_names = FALSE)
 AsheFemalePartAll <- read_excel("PROV - SIC07 Industry (2) SIC2007 Table 4.6a   Hourly pay - Excluding overtime 2018.xls", sheet = 10, range = "A6:E6", col_names = FALSE)
 AsheFemalePartRetail <- read_excel("PROV - SIC07 Industry (2) SIC2007 Table 4.6a   Hourly pay - Excluding overtime 2018.xls", sheet = 10, range = "A60:E60", col_names = FALSE)
-
-#rbind
 
 # ASHE Table 5.6a: Hourly pay - Excluding overtime (£)
 
@@ -477,10 +495,12 @@ AsheWalesFemalePartRetail <- read_excel("PROV - SIC07 Work Region Industry (2) S
 AsheScotlandFemalePartRetail <- read_excel("PROV - SIC07 Work Region Industry (2) SIC2007 Table 5.6a   Hourly pay - Excluding overtime 2018.xls", sheet = 10, range = "A1318:E1318", col_names = FALSE)
 
 
+#### House Prices ####
+
+# London
+
 #Where to look
 endpoint <- "http://landregistry.data.gov.uk/landregistry/query"
-
-#### House Prices - London ####
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -518,7 +538,7 @@ HPlondon$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPlondon
 HPlondon <- xts(x=HPlondon, order.by=HPlondon$ukhpi_refMonth)
 
 
-#### House Prices - Scotland ####
+# Scotland
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -556,7 +576,7 @@ HPscotland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPscot
 HPscotland <- xts(x=HPscotland, order.by=HPscotland$ukhpi_refMonth)
 
 
-#### House Prices - Wales ####
+# House Prices - Wales
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -594,7 +614,7 @@ HPwales$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPwales),
 HPwales <- xts(x=HPwales, order.by=HPwales$ukhpi_refMonth)
 
 
-#### House Prices - Northern Ireland ####
+# House Prices - Northern Ireland
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -632,7 +652,7 @@ HPnorthern_ireland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nro
 HPnorthern_ireland <- xts(x=HPnorthern_ireland, order.by=HPnorthern_ireland$ukhpi_refMonth)
 
 
-#### House Prices - England ####
+# House Prices - England
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -670,7 +690,7 @@ HPengland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPengla
 HPengland <- xts(x=HPengland, order.by=HPengland$ukhpi_refMonth)
 
 
-#### House Prices - North East ####
+# House Prices - North East
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -708,7 +728,7 @@ HPnortheast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPnor
 HPnortheast <- xts(x=HPnortheast, order.by=HPnortheast$ukhpi_refMonth)
 
 
-#### House Prices - North West ####
+# House Prices - North West
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -746,7 +766,7 @@ HPnorthwest$ukhpi_refMonth <- seq(as.Date("1995-02-01"), length.out = nrow(HPnor
 HPnorthwest <- xts(x=HPnorthwest, order.by=HPnorthwest$ukhpi_refMonth)
 
 
-#### House Prices - Yorkshire & the Humber ####
+# House Prices - Yorkshire & the Humber
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -784,7 +804,7 @@ HPyork$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPyork), b
 HPyork <- xts(x=HPyork, order.by=HPyork$ukhpi_refMonth)
 
 
-#### House Prices - East Midlands ####
+# House Prices - East Midlands
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -822,7 +842,7 @@ HPeastmid$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPeastm
 HPeastmid <- xts(x=HPeastmid, order.by=HPeastmid$ukhpi_refMonth)
 
 
-#### House Prices - West Midlands ####
+# House Prices - West Midlands
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -860,7 +880,7 @@ HPwestmid$ukhpi_refMonth <- seq(as.Date("1995-02-01"), length.out = nrow(HPwestm
 HPwestmid <- xts(x=HPwestmid, order.by=HPwestmid$ukhpi_refMonth)
 
 
-#### House Prices - East ####
+# House Prices - East
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -898,7 +918,7 @@ HPeast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPeast), b
 HPeast <- xts(x=HPeast, order.by=HPeast$ukhpi_refMonth)
 
 
-#### House Prices - South East ####
+# House Prices - South East
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -936,7 +956,7 @@ HPsoutheast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPsou
 HPsoutheast <- xts(x=HPsoutheast, order.by=HPsoutheast$ukhpi_refMonth)
 
 
-#### House Prices - South West ####
+# House Prices - South West
 
 #What to look for
 query <- "PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
@@ -973,135 +993,9 @@ HPsouthwest$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPsou
 #Convert to xts
 HPsouthwest <- xts(x=HPsouthwest, order.by=HPsouthwest$ukhpi_refMonth)
 
-#### DRI Data ####
+#### Consumer Price Inflation ####
 
-source("DRIData.R")
-
-#,"XLConnect","rJava", "ReporteRs"
-#enter last date you wish to upload for
-endate= ISOdate(2018,06,1)
-
-#add bespoke endates for monitors particularly when data have been entered into workbooks but not published
-#must be a date after 2017,11,01
-endateRSM=ISOdate(2018,06,1)
-endateFF=ISOdate(2018,06,1)
-endateDRI=ISOdate(2018,06,1)
-
-adddate=length(seq(from=ISOdate(2017,11,1), to=endate, by="months"))-1 
-adddateRSM=length(seq(from=ISOdate(2017,11,1), to=endateRSM, by="months"))-1
-adddateFF=length(seq(from=ISOdate(2017,11,1), to=endateFF, by="months"))-1 
-adddateDRI=length(seq(from=ISOdate(2017,11,1), to=endateDRI, by="months"))-1 
-
-
-
-##functions
-#rollingweighted average
-
-rollweightedav <- function(x,y,z,n){
-  new=0
-  for (i in n:nrow(x) ){
-    a= crossprod(x[(i-(n-1)):i,y],x[(i-(n-1)):i,z])/sum(x[(i-(n-1)):i,z])
-    new=cbind(new,a)
-  }
-  
-  var=append(rep(NA,n-1),new[-1])
-  var_new=as.numeric(var)     
-  return(var_new)
-}
-
-# format numbers
-scaleFUN <- function(x) sprintf("%.1f", x)
-
-setwd("Z:/Projects/RDataAggregation/")
-
-# Read-in DRI
-
-DRI_Master=read.csv("DRI Master.csv")
-DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Total.Retail_Total.Retail_Total.Visits")]
-
-DRI_Master=change(DRI_Master,Var="Total.Retail_Total.Retail_Total.Visits" ,TimeVar="date",NewVar = paste("Visit_growth", sep="_"),slideBy=-12, type="percent")
-
-DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Visit_growth")]
-DRI_Master$date<-(seq(ISOdate(2014,08,1), by = "month", length.out = nrow(DRI_Master)))
-names(DRI_Master)[1:2]=c("BRC-Hitwise Mobile Share of retail website visits (%)","BRC-Hitwise Growth in retailer website visits (yoy %)")
-
-DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]=DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]*100
-
-# REM
-
-REM = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMasterRebuild201710 (Autosaved).xlsm",range="'Headlines & Charts'!e22:dn22",col_names = FALSE,col_types="numeric")*100))
-
-# Footfall
-
-FF=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!k6:k",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!q6:q",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_12mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!s6:s",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-
-FF_Highst=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!h6:h",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_ShoppingCentre=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!j6:j",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_RetailPark=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!i6:i",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-
-FF_Highst3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!m6:m",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_ShoppingCentre3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!o6:o",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_RetailPark3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!n6:n",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-
-
-FF=cbind(FF,FF_3mth,FF_12mth,FF_Highst,FF_ShoppingCentre,FF_RetailPark,FF_Highst3mth,FF_ShoppingCentre3mth,FF_RetailPark3mth)
-
-# RSM
-
-RSM=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!cf8:cf",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ub8:ub",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!zc8:zc",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!dm8:dm",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ej8:ej",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!fg8:fg",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!av8:av",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adf8:adf",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adi8:adi",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sp8:sp",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sn8:sn",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!so8:so",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-
-RSM_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!tz8:tz",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ua8:ua",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_weeks=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!k8:k",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")
-
-RSM=cbind(RSM,RSM_3mth,RSM_12mth,RSM_Online,RSM_Online_3mth,RSM_Online_12mth,RSM_LFL,RSM_Stores,RSM_LFL_Stores,RSM_LFL_3mth,RSM_LFL_Food_3mth,RSM_LFL_NF_3mth,RSM_Food_3mth,RSM_NF_3mth)
-
-#row.names(RSM)=seq(from=as.Date("1995/1/1"), by = "month", length.out = nrow(RSM))
-names(RSM)[1]="Total Sales (% yoy change):BRC-KPMG RSM"
-names(RSM)[2]="Total Sales 3 month average (% yoy change): BRC-KPMG RSM "
-names(RSM)[3]="Total Sales 12 month average (% yoy change):BRC-KPMG RSM "
-names(RSM)[4]="Online Non-Food Sales (% yoy change):BRC-KPMG RSM"
-names(RSM)[5]="Online Non-Food Sales 3 month average (% yoy change):BRC-KPMG RSM"
-names(RSM)[6]="Online Non-Food Sales 12 month average (% yoy change):BRC-KPMG RSM"
-names(RSM)[7]="Like for Like Sales (% yoy change):BRC-KPMG RSM"
-names(RSM)[8]="In-Store Non-Food Sales 3 month average (% yoy change)"
-names(RSM)[9]="In-Store Non-Food Like-for-Like sales 3 month average (% yoy change)"
-
-names(RSM)[10]="Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
-names(RSM)[11]="Food Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
-names(RSM)[12]="Non-Food Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
-
-names(RSM)[13]="Food Sales 3 month average (% yoy change)"
-names(RSM)[14]="Food Sales Non-Food 3 month average (% yoy change)"
-
-names(FF)[1]="Footfall UK (% yoy change):BRC-Springboard"
-names(FF)[2]="Footfall UK 3 month average (% yoy change):BRC-Springboard"
-names(FF)[3]="Footfall UK 12 month average (% yoy change):BRC-Springboard"
-names(FF)[4]="Footfall High Street (% yoy change):BRC-Springboard"
-names(FF)[5]="Footfall Shopping Centre (% yoy change):BRC-Springboard"
-names(FF)[6]="Footfall Retail Park (% yoy change):BRC-Springboard"
-names(FF)[7]="Footfall High Street 3 month average (% yoy change):BRC-Springboard"
-names(FF)[8]="Footfall Shopping Centre 3 month average (% yoy change):BRC-Springboard"
-names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboard"
-
-# ONS consumer price inflation
-
-#### ONS Consumer Price Inflation Annual Data (MM23) - Definitions ####
-
-setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+# ONS Consumer Price Inflation Annual Data (MM23) - Definitions
 
 # "D7G7" = All Items
 
@@ -1164,7 +1058,7 @@ setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
 # "D7O8" = Personal Effects
 # "D7GN" = Tobacco
 
-#### Get CPI Data ####
+# CPI Data
 cpi <- pdfetch_ONS(c("D7G7", 
                      "D7G8", "D7GM", 
                      "L7JM", "L7JN", "L7JP", "L7JT", "L7JU", "D7GL", "D7HO", "L7L6",
@@ -1179,7 +1073,7 @@ cpi <- pdfetch_ONS(c("D7G7",
 ), "MM23")
 
 
-#### ONS Consumer Price Inflation Weights (MM23) - Definitions ####
+# ONS Consumer Price Inflation Weights (MM23) - Definitions
 
 # "CHZQ" = All Items
 
@@ -1242,7 +1136,7 @@ cpi <- pdfetch_ONS(c("D7G7",
 # "CJVX" = Personal Effects
 # "CJWP" = Tobacco
 
-#### Get CPI Weights ####
+# Get CPI Weights
 w_cpi <- pdfetch_ONS(c("CHZQ", 
                        "CHZR", "CJUZ", 
                        "L83B", "L83C", "L83S", "L844", "L846", "CJUY", "CJWI", "L859", 
@@ -1262,16 +1156,16 @@ cpi <- merge(cpi, w_cpi, join = "outer")
 cpi <- na.locf(cpi)
 cpi <- na.locf(cpi, fromLast = TRUE)
 
-#### Build CPI variables to match SPI ####
+# Build CPI variables to match SPI
 
 #All Items#
 cpi_all <- cpi$D7G7
-colnames(cpi_all) <- "CPI"
+colnames(cpi_all) <- "CPI All Items"
 
 #Food#
 cpi_food <- (cpi$D7G8 * (cpi$CHZR / (cpi$CHZR + cpi$CJUZ)) + 
                cpi$D7GM * (cpi$CJUZ / (cpi$CHZR + cpi$CJUZ)))
-colnames(cpi_food) <- "CPI"
+colnames(cpi_food) <- "CPI Food"
 
 #Ambient Food#
 cpi_ambient <- (cpi$D7GM * (cpi$CJUZ / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
@@ -1283,7 +1177,7 @@ cpi_ambient <- (cpi$D7GM * (cpi$CJUZ / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83
                   cpi$D7GL * (cpi$CJUY / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
                   cpi$D7HO * (cpi$CJWI / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)) +
                   cpi$L7L6 * (cpi$L859 / (cpi$CJUZ + cpi$L83B + cpi$L83C + cpi$L83S + cpi$L844 + cpi$L846 + cpi$CJUY + cpi$CJWI + cpi$L859)))
-colnames(cpi_ambient) <- "CPI"
+colnames(cpi_ambient) <- "CPI Ambient Food"
 
 #Fresh Food#
 cpi_fresh <- (cpi$L7JO * (cpi$L83H / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
@@ -1295,37 +1189,37 @@ cpi_fresh <- (cpi$L7JO * (cpi$L83H / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG 
                 cpi$L7KS * (cpi$L84P / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
                 cpi$L7L5 * (cpi$L83H / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)) +
                 cpi$L7L2 * (cpi$L853 / (cpi$L83H + cpi$L83T + cpi$CJWD + cpi$CJWG + cpi$CJWC + cpi$CJWE + cpi$L84P + cpi$L858 + cpi$L853)))
-colnames(cpi_fresh) <- "CPI"
+colnames(cpi_fresh) <- "CPI Fresh Food"
 
 #Clothing & Footwear#
 cpi_clothing <- cpi$D7GA
-colnames(cpi_clothing) <- "CPI"
+colnames(cpi_clothing) <- "CPI Clothing"
 
 #Health & Beauty#
 cpi_health <- (cpi$D7JD * (cpi$CJYO / (cpi$CJYO + cpi$CJYA)) +
                  cpi$D7NP * (cpi$CJYA / (cpi$CJYO + cpi$CJYA)))
-colnames(cpi_health) <- "CPI"
+colnames(cpi_health) <- "CPI Health & Beauty"
 
 #DIY, Gardening & Hardware#
 cpi_diy <- cpi$D7GY
-colnames(cpi_diy) <- "CPI"
+colnames(cpi_diy) <- "CPI DIY"
 
 #Furniture & Flooring#
 cpi_furniture <- (cpi$D7GU * (cpi$CJVG / (cpi$CJVG + cpi$CJVH)) +
                     cpi$D7GV * (cpi$CJVH / (cpi$CJVG + cpi$CJVH)))
-colnames(cpi_furniture) <- "CPI"
+colnames(cpi_furniture) <- "CPI Furniture"
 
 #Electricals#
 cpi_electricals <- (cpi$D7IF * (cpi$CJXI / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
                       cpi$D7IZ * (cpi$CJYC / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
                       cpi$D7J2 * (cpi$CJYD / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)) +
                       cpi$D7J3 * (cpi$CJYE / (cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE)))
-colnames(cpi_electricals) <- "CPI"
+colnames(cpi_electricals) <- "CPI Electricals"
 
 #Books, Stationery & Home Entertainment#
 cpi_books <- (cpi$D7O3 * (cpi$ICVT / (cpi$ICVT + cpi$CJYF)) +
                 cpi$D7J6 * (cpi$CJYF / (cpi$ICVT + cpi$CJYF)))
-colnames(cpi_books) <- "CPI"
+colnames(cpi_books) <- "CPI Books"
 
 #Other Non-Food#
 cpi_othnonfood <- (cpi$D7NX * (cpi$ICVP / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
@@ -1334,7 +1228,7 @@ cpi_othnonfood <- (cpi$D7NX * (cpi$ICVP / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$
                      cpi$L7SM * (cpi$L8D2 / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
                      cpi$D7O8 * (cpi$CJVX / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
                      cpi$D7GN * (cpi$CJWP / (cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)))
-colnames(cpi_othnonfood) <- "CPI"
+colnames(cpi_othnonfood) <- "CPI Other Non-Food"
 
 #Non-Food#
 cpi_nonfood <- (cpi$D7GA * (cpi$CHZT / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
@@ -1355,10 +1249,10 @@ cpi_nonfood <- (cpi$D7GA * (cpi$CHZT / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJV
                   cpi$L7SM * (cpi$L8D2 / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
                   cpi$D7O8 * (cpi$CJVX / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)) +
                   cpi$D7GN * (cpi$CJWP / (cpi$CHZT + cpi$CJYO + cpi$CJYA + cpi$CJVK + cpi$CJVG + cpi$CJVH + cpi$CJXI + cpi$CJYC + cpi$CJYD + cpi$CJYE + cpi$ICVT + cpi$CJYF + cpi$ICVP + cpi$ICVQ + cpi$L8CZ + cpi$L8D2 + cpi$CJVX + cpi$CJWP)))
-colnames(cpi_nonfood) <- "CPI"
+colnames(cpi_nonfood) <- "CPI Non-Food"
 
 
-#### Download Output Excel File and Create XTS ####
+#### Productivity Data ####
 
 #Output per hour Whole Economy
 url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/labourproductivity/datasets/annualbreakdownofcontributionswholeeconomyandsectors/current/prodconts.xls"
@@ -1370,7 +1264,7 @@ output_all <- read_excel(outputperhour, sheet = 6, range = "B7:B93")
 dates <- seq(as.Date("1997-03-20"), length = nrow(output_all), by = "quarters")
 dates <- LastDayInMonth(dates)
 output_all <- xts(x = output_all, order.by=dates)
-colnames(output_all) <- "Whole Economy"
+colnames(output_all) <- "Output per Hour - Whole Economy"
 
 #Output per hour Retail
 url <- "https://www.ons.gov.uk/file?uri=/economy/economicoutputandproductivity/productivitymeasures/datasets/labourproductivitybyindustrydivision/apriltojune2018/division.xls"
@@ -1382,22 +1276,22 @@ output_retail <- read_excel(outputperhour_retail, sheet = 3, range = "Y7:Y93")
 dates <- seq(as.Date("1997-03-20"), length = nrow(output_retail), by = "quarters")
 dates <- LastDayInMonth(dates)
 output_retail <- xts(x = output_retail, order.by=dates)
-colnames(output_retail) <- "Retail"
+colnames(output_retail) <- "Output per Hour - Retail"
 
 
-#### ONS retail sales (DRSI) ####
+#### Retail Sales Index ####
 
 # Volume data: RETAIL SALES INDEX: VOLUME SEASONALLY ADJUSTED PERCENTAGE CHANGE ON SAME MONTH A YEAR EARLIER
-# "J5EB" = "All retailing including automotive fuel"
-# "J45U" = "All retailing excluding automotive fuel"
-# "IDOB"= "Predominantly food stores"
-# "IDOC" = "Total predominantly non-food stores"
-# "IDOA" = "Non-Specialised stores"
-# "IDOG" = "Textile, clothing and footwear stores"
-# "IDOH" = "Households goods stores"
-# "IDOD" = "Other Non - Food Stores" 
-# "J5DK" = "Non-Store retailing"
-# "JO4C" = "Fuel"
+# "J5EB" = "RSI Volumes - All retailing including automotive fuel"
+# "J45U" = "RSI Volumes - All retailing excluding automotive fuel"
+# "IDOB" = "RSI Volumes - Predominantly food stores"
+# "IDOC" = "RSI Volumes - Predominantly non-food stores"
+# "IDOA" = "RSI Volumes - Non-Specialised stores"
+# "IDOG" = "RSI Volumes - Textile, clothing and footwear stores"
+# "IDOH" = "RSI Volumes - Households goods stores"
+# "IDOD" = "RSI Volumes - Other Non-Food Stores" 
+# "J5DK" = "RSI Volumes - Non-Store retailing"
+# "JO4C" = "RSI Volumes - Fuel"
 
 # Fetch data from ONS and convert to month only (so no days)
 
@@ -1405,6 +1299,7 @@ colnames(output_retail) <- "Retail"
 rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH","IDOD","JO4C","J5DK"), "DRSI")
 #rsi_vol <- to.monthly(rsi_vol, OHLC=FALSE)
 
+colnames(rsi_vol) <- c("RSI Volumes - All retailing including automotive fuel", "RSI Volumes - All retailing excluding automotive fuel", "RSI Volumes - Predominantly food stores", "RSI Volumes - Predominantly non-food stores", "RSI Volumes - Non-Specialised stores", "RSI Volumes - Textile, clothing and footwear stores", "RSI Volumes - Households goods stores", "RSI Volumes - Other Non-Food Stores", "RSI Volumes - Non-Store retailing", "RSI Volumes - Fuel")
 
 # Retail sales volume weights (2017)
 
@@ -1430,29 +1325,50 @@ W_J45U = 90.23
 
 # Value Data
 
-# "J59v" = "All retailing including automotive fuel"
-# "J3L2" = "All retailing excluding automotive fuel"
-# "J3L3" = "All retailing excluding automotive fuel: Large Businesses"
-# "J3L4" = "All retailing excluding automotive fuel: Small Businesses"
+# "J59v" = "RSI Values - All retailing including automotive fuel"
+# "J3L2" = "RSI Values - All retailing excluding automotive fuel"
+# "J3L3" = "RSI Values - All retailing excluding automotive fuel: Large Businesses"
+# "J3L4" = "RSI Values - All retailing excluding automotive fuel: Small Businesses"
 
-# "EAIA"= "Predominantly food stores"
-# "EAIB" = "Total predominantly non-food stores"
-# "EAIN" = "Non-Specialised stores"
-# "EAIC" = "Textile, clothing and footwear stores"
-# "EAID" = "Households goods stores"
-# "EAIF" = "Other Non - Food Stores" 
-# "J58L" = "Non-Store retailing"
-# "IYP9" = "Fuel"
+# "EAIA" = "RSI Values - Predominantly food stores"
+# "EAIB" = "RSI Values - Total predominantly non-food stores"
+# "EAIN" = "RSI Values - Non-Specialised stores"
+# "EAIC" = "RSI Values - Textile, clothing and footwear stores"
+# "EAID" = "RSI Values - Households goods stores"
+# "EAIF" = "RSI Values - Other Non - Food Stores" 
+# "J58L" = "RSI Values - Non-Store retailing"
+# "IYP9" = "RSI Values - Fuel"
 
-# "EAIT" = "Food Stores: Large Businesses"
-# "EAIU" = "Food Stores: Small Businesses"
-# "EAIV" = "Total Predominantly Non-Food Stores: Large Businesses"
-# "EAIW" = "Total Predominantly Non-Food Stores: Small Businesses"
-# "J58M" = "Non-Store retailing: Large Businesses"
-# "j58N" = "Non-Store retailing: Small Businesses"
+# "EAIT" = "RSI Values - Food Stores: Large Businesses"
+# "EAIU" = "RSI Values - Food Stores: Small Businesses"
+# "EAIV" = "RSI Values - Total Predominantly Non-Food Stores: Large Businesses"
+# "EAIW" = "RSI Values - Total Predominantly Non-Food Stores: Small Businesses"
+# "J58M" = "RSI Values - Non-Store retailing: Large Businesses"
+# "j58N" = "RSI Values - Non-Store retailing: Small Businesses"
+# "KP3T" = "RSI Values - Internet"
 
 rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIT","EAIU","EAIV","EAIW","J58M","j58N","KP3T"), "DRSI")
 # rsi_val <- to.monthly(rsi_val, OHLC=FALSE)
+
+colnames(rsi_val) <- c("RSI Values - All retailing including automotive fuel",
+                       "RSI Values - All retailing excluding automotive fuel",
+                       "RSI Values - All retailing excluding automotive fuel: Large Businesses",
+                       "RSI Values - All retailing excluding automotive fuel: Small Businesses",
+                       "RSI Values - Predominantly food stores",
+                       "RSI Values - Total predominantly non-food stores",
+                       "RSI Values - Non-Specialised stores",
+                       "RSI Values - Textile, clothing and footwear stores",
+                       "RSI Values - Households goods stores",
+                       "RSI Values - Other Non - Food Stores",
+                       "RSI Values - Non-Store retailing",
+                       "RSI Values - Fuel",
+                       "RSI Values - Food Stores: Large Businesses",
+                       "RSI Values - Food Stores: Small Businesses",
+                       "RSI Values - Total Predominantly Non-Food Stores: Large Businesses",
+                       "RSI Values - Total Predominantly Non-Food Stores: Small Businesses",
+                       "RSI Values - Non-Store retailing: Large Businesses",
+                       "RSI Values - Non-Store retailing: Small Businesses",
+                       "RSI Values - Internet")
 
 # Value weights
 
@@ -1500,7 +1416,121 @@ W_J58M=21652
 W_J58N=11550
 
 
-#### Get SPI Data ####
+#### DRI Data ####
+
+source("DRIData.R")
+
+#,"XLConnect","rJava", "ReporteRs"
+#enter last date you wish to upload for
+endate= ISOdate(2018,06,1)
+
+#add bespoke endates for monitors particularly when data have been entered into workbooks but not published
+#must be a date after 2017,11,01
+endateRSM=ISOdate(2018,06,1)
+endateFF=ISOdate(2018,06,1)
+endateDRI=ISOdate(2018,06,1)
+
+adddate=length(seq(from=ISOdate(2017,11,1), to=endate, by="months"))-1 
+adddateRSM=length(seq(from=ISOdate(2017,11,1), to=endateRSM, by="months"))-1
+adddateFF=length(seq(from=ISOdate(2017,11,1), to=endateFF, by="months"))-1 
+adddateDRI=length(seq(from=ISOdate(2017,11,1), to=endateDRI, by="months"))-1 
+
+
+setwd("Z:/Projects/RDataAggregation/")
+
+# Read-in DRI
+
+DRI_Master=read.csv("DRI Master.csv")
+DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Total.Retail_Total.Retail_Total.Visits")]
+
+DRI_Master=change(DRI_Master,Var="Total.Retail_Total.Retail_Total.Visits" ,TimeVar="date",NewVar = paste("Visit_growth", sep="_"),slideBy=-12, type="percent")
+
+DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Visit_growth")]
+DRI_Master$date<-(seq(ISOdate(2014,08,1), by = "month", length.out = nrow(DRI_Master)))
+names(DRI_Master)[1:2]=c("BRC-Hitwise Mobile Share of retail website visits (%)","BRC-Hitwise Growth in retailer website visits (yoy %)")
+
+DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]=DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]*100
+
+#### REM Data ####
+
+REM_emp = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e22:dt22",col_names = FALSE,col_types="numeric")*100))
+REM_FTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e24:dt24",col_names = FALSE,col_types="numeric")*100))
+REM_PTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e25:dt25",col_names = FALSE,col_types="numeric")*100))
+REM_hrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e28:dt28",col_names = FALSE,col_types="numeric")*100))
+REM_FThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e29:dt29",col_names = FALSE,col_types="numeric")*100))
+REM_PThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e30:dt30",col_names = FALSE,col_types="numeric")*100))
+REM_stores = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e20:dt20",col_names = FALSE,col_types="numeric")*100))
+REM_stores3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e21:dt21",col_names = FALSE,col_types="numeric")*100))
+
+#### Footfall Data ####
+
+FF=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!k6:k",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!q6:q",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_12mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!s6:s",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+
+FF_Highst=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!h6:h",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_ShoppingCentre=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!j6:j",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_RetailPark=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!i6:i",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+
+FF_Highst3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!m6:m",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_ShoppingCentre3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!o6:o",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_RetailPark3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!n6:n",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+
+FF=cbind(FF,FF_3mth,FF_12mth,FF_Highst,FF_ShoppingCentre,FF_RetailPark,FF_Highst3mth,FF_ShoppingCentre3mth,FF_RetailPark3mth)
+
+#### RSM Data ####
+
+RSM=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ci8:ci",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ue8:ue",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!zf8:zf",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_Online=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!dp8:dp",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_Online_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!em8:em",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_Online_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!fj8:fj",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_LFL=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ay8:ay",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adq8:adq",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adt8:adt",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ss8:ss",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sq8:sq",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sr8:sr",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+
+RSM_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!uc8:uc",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ud8:ud",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM_weeks=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!k8:k",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")
+
+RSM=cbind(RSM,RSM_3mth,RSM_12mth,RSM_Online,RSM_Online_3mth,RSM_Online_12mth,RSM_LFL,RSM_Stores,RSM_LFL_Stores,RSM_LFL_3mth,RSM_LFL_Food_3mth,RSM_LFL_NF_3mth,RSM_Food_3mth,RSM_NF_3mth)
+
+#row.names(RSM)=seq(from=as.Date("1995/1/1"), by = "month", length.out = nrow(RSM))
+names(RSM)[1]="Total Sales (% yoy change):BRC-KPMG RSM"
+names(RSM)[2]="Total Sales 3 month average (% yoy change): BRC-KPMG RSM "
+names(RSM)[3]="Total Sales 12 month average (% yoy change):BRC-KPMG RSM "
+names(RSM)[4]="Online Non-Food Sales (% yoy change):BRC-KPMG RSM"
+names(RSM)[5]="Online Non-Food Sales 3 month average (% yoy change):BRC-KPMG RSM"
+names(RSM)[6]="Online Non-Food Sales 12 month average (% yoy change):BRC-KPMG RSM"
+names(RSM)[7]="Like for Like Sales (% yoy change):BRC-KPMG RSM"
+names(RSM)[8]="In-Store Non-Food Sales 3 month average (% yoy change)"
+names(RSM)[9]="In-Store Non-Food Like-for-Like sales 3 month average (% yoy change)"
+
+names(RSM)[10]="Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
+names(RSM)[11]="Food Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
+names(RSM)[12]="Non-Food Like for Like Sales 3 month average (% yoy change):BRC-KPMG RSM"
+
+names(RSM)[13]="Food Sales 3 month average (% yoy change)"
+names(RSM)[14]="Food Sales Non-Food 3 month average (% yoy change)"
+
+names(FF)[1]="Footfall UK (% yoy change):BRC-Springboard"
+names(FF)[2]="Footfall UK 3 month average (% yoy change):BRC-Springboard"
+names(FF)[3]="Footfall UK 12 month average (% yoy change):BRC-Springboard"
+names(FF)[4]="Footfall High Street (% yoy change):BRC-Springboard"
+names(FF)[5]="Footfall Shopping Centre (% yoy change):BRC-Springboard"
+names(FF)[6]="Footfall Retail Park (% yoy change):BRC-Springboard"
+names(FF)[7]="Footfall High Street 3 month average (% yoy change):BRC-Springboard"
+names(FF)[8]="Footfall Shopping Centre 3 month average (% yoy change):BRC-Springboard"
+names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboard"
+
+setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+
+
+#### Shop Price Inflation ####
 
 #add bespoke endates for monitors particularly when data have been entered into workbooks but not published
 endateSPI=ISOdate(2018,11,1)
@@ -1526,59 +1556,65 @@ SPI_Ambient=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_All), by="months")
 dates <- LastDayInMonth(dates)
 spi_all <- xts(x=SPI_All, order.by=dates)
-colnames(spi_all) <- "SPI"
+colnames(spi_all) <- "SPI All Items"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Food), by="months")
 dates <- LastDayInMonth(dates)
 spi_food <- xts(x=SPI_Food, order.by=dates)
-colnames(spi_food) <- "SPI"
+colnames(spi_food) <- "SPI Food"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_NF), by="months")
 dates <- LastDayInMonth(dates)
 spi_nonfood <- xts(x=SPI_NF, order.by=dates)
-colnames(spi_nonfood) <- "SPI"
+colnames(spi_nonfood) <- "SPI Non-Food"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Clothes), by="months")
 dates <- LastDayInMonth(dates)
 spi_clothes <- xts(x=SPI_Clothes, order.by=dates)
-colnames(spi_clothes) <- "SPI"
+colnames(spi_clothes) <- "SPI Clothing"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Furniture), by="months")
 dates <- LastDayInMonth(dates)
 spi_furniture <- xts(x=SPI_Furniture, order.by=dates)
-colnames(spi_furniture) <- "SPI"
+colnames(spi_furniture) <- "SPI Furniture"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Elect), by="months")
 dates <- LastDayInMonth(dates)
 spi_electricals <- xts(x=SPI_Elect, order.by=dates)
-colnames(spi_electricals) <- "SPI"
+colnames(spi_electricals) <- "SPI Electricals"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_DIY), by="months")
 dates <- LastDayInMonth(dates)
 spi_diy <- xts(x=SPI_DIY, order.by=dates)
-colnames(spi_diy) <- "SPI"
+colnames(spi_diy) <- "SPI DIY"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Books), by="months")
 dates <- LastDayInMonth(dates)
 spi_books <- xts(x=SPI_Books, order.by=dates)
-colnames(spi_books) <- "SPI"
+colnames(spi_books) <- "SPI Books"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_HB), by="months")
 dates <- LastDayInMonth(dates)
 spi_health <- xts(x=SPI_HB, order.by=dates)
-colnames(spi_health) <- "SPI"
+colnames(spi_health) <- "SPI Health & Beauty"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_ONF), by="months")
 dates <- LastDayInMonth(dates)
 spi_othnonfood <- xts(x=SPI_ONF, order.by=dates)
-colnames(spi_othnonfood) <- "SPI"
+colnames(spi_othnonfood) <- "SPI Other Non-Food"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Fresh), by="months")
 dates <- LastDayInMonth(dates)
 spi_fresh <- xts(x=SPI_Fresh, order.by=dates)
-colnames(spi_fresh) <- "SPI"
+colnames(spi_fresh) <- "SPI Fresh Food"
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Ambient), by="months")
 dates <- LastDayInMonth(dates)
 spi_ambient <- xts(x=SPI_Ambient, order.by=dates)
-colnames(spi_ambient) <- "SPI"
+colnames(spi_ambient) <- "SPI Ambient Food"
+
+#### Database Merge ####
+
+# merge xts objects into one big dataset
+database <- merge(cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy, cpi_electricals, cpi_food, cpi_fresh, cpi_furniture, cpi_health, cpi_nonfood, cpi_othnonfood, spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, awe, boe_ccards, boe_conscredit, boe_gbp, boe_house, boe_secured, employ$`Employment Rate UK`, unemp$`Unemployment Rate UK`, GVAmonthly_mom, GVAmonthly_yoy, rsi_val, rsi_vol, all = TRUE, fill = NA)
+databasedf <- data.frame(date=index(database), coredata(database))
