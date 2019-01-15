@@ -1765,10 +1765,8 @@ databasemonthlydf <- data.frame(date=index(databasemonthly), coredata(databasemo
 
 # merge xts objects into one big dataset and create dataframe for table - Quarterly Data
 databasequarterly <- merge(gva_all, gva_retail, output_all, output_retail, empjobs_all, empjobs_retail, selfjobs_all, selfjobs_retail, gdpquarterly, all = TRUE, fill = NA)
-index(databasequarterly) <- as.yearqtr(index(databasequarterly))
 databasequarterlydf <- data.frame(date=index(databasequarterly), coredata(databasequarterly))
 
 # merge xts objects into one big dataset and create dataframe for table - Yearly Data
 databaseyearly <- merge(nomiswfjobsenglandcountxts, nomiswfjobsenglandpercentxts, nomiswfjobsgbcountxts, nomiswfjobsgbpercentxts, nomiswfjobsscotlandcountxts, nomiswfjobsscotlandpercentxts, nomiswfjobswalescountxts, nomiswfjobswalespercentxts, nomisenterprisesenglandtotalxts, nomisenterprisesnitotalxts, nomisenterprisesscotlandtotalxts, nomisenterprisesuktotalxts, nomisenterpriseswalestotalxts, nomisunitsenglandtotalxts, nomisunitsnitotalxts, nomisunitsscotlandtotalxts, nomisunitsuktotalxts, nomisunitswalestotalxts, all = TRUE, fill = NA)
-index(databaseyearly) <- as.annually(index(databaseyearly))
 databaseyearlydf <- data.frame(date=index(databaseyearly), coredata(databaseyearly))

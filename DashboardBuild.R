@@ -16,15 +16,31 @@ ui <- dashboardPage(skin = "blue",
                    sidebarMenu(id = "sidebarmenu",
                      menuItem("BRC Data Snapshot", icon = icon("th"), tabName = "brcstats"),
                      menuItem("External Data Snapshot", icon = icon("th"), tabName = "extstats"),
-                     menuItem("All Data Graph", icon = icon("chart-line"), tabName = "dygraph"),
+                     menuItem("Monthly Data Graph", icon = icon("chart-line"), tabName = "dygraph"),
                        conditionalPanel("input.sidebarmenu === 'dygraph'",
                                         selectInput("selector", "Select Series", multiple = TRUE, choices = colnames(databasemonthly), selected = "CPI.All.Items")),
-                     menuItem("All Data Table", icon = icon("table"), tabName = "table"),
+                     menuItem("Monthly Data Table", icon = icon("table"), tabName = "table"),
                        conditionalPanel("input.sidebarmenu === 'table'",
                                         selectInput("selector2", "Select Series", multiple = TRUE, choices = colnames(databasemonthlydf), selected = c("CPI.All.Items", "date")),
                                         dateRangeInput("selector3", "Select Dates", start = "2001-01-01", end = Sys.Date(),
-                                                       format = "yyyy-mm-dd", weekstart = 0))
-                       
+                                                       format = "yyyy-mm-dd", weekstart = 0)),
+                     menuItem("Quarterly Data Graph", icon = icon("chart-line"), tabName = "dygraph2"),
+                     conditionalPanel("input.sidebarmenu === 'dygraph2'",
+                                      selectInput("selector4", "Select Series", multiple = TRUE, choices = colnames(databasequarterly), selected = "GVA.Whole.Economy")),
+                     menuItem("Quarterly Data Table", icon = icon("table"), tabName = "table2"),
+                     conditionalPanel("input.sidebarmenu === 'table2'",
+                                      selectInput("selector5", "Select Series", multiple = TRUE, choices = colnames(databasequarterlydf), selected = c("GVA.Whole.Economy", "date")),
+                                      dateRangeInput("selector6", "Select Dates", start = "2001-01-01", end = Sys.Date(),
+                                                     format = "yyyy-mm-dd", weekstart = 0)),
+                     menuItem("Yearly Data Graph", icon = icon("chart-line"), tabName = "dygraph3"),
+                     conditionalPanel("input.sidebarmenu === 'dygraph3'",
+                                      selectInput("selector7", "Select Series", multiple = TRUE, choices = colnames(databaseyearly), selected = "Local.Units...UK")),
+                     menuItem("Yearly Data Table", icon = icon("table"), tabName = "table3"),
+                     conditionalPanel("input.sidebarmenu === 'table3'",
+                                      selectInput("selector8", "Select Series", multiple = TRUE, choices = colnames(databaseyearlydf), selected = c("Local.Units...UK", "date")),
+                                      dateRangeInput("selector9", "Select Dates", start = "2001-01-01", end = Sys.Date(),
+                                                     format = "yyyy-mm-dd", weekstart = 0))
+                     
                      )),
                  
                  dashboardBody(      
@@ -88,17 +104,45 @@ ui <- dashboardPage(skin = "blue",
                         
                         
                       tabItem(tabName = "dygraph",
-                        h2("All Data Graph"),
+                        h2("Monthly Data Graph"),
                         
                         dygraphOutput("dygraph")),
                         
                       tabItem(tabName = "table",
-                        h2("All Data Table"),
+                        h2("Monthly Data Table"),
                         fluidRow(
                         DT::dataTableOutput("table")),
                         fluidRow(
                           box(title = "Download Data", downloadButton("downloadData", "Download"))
-                        ))
+                        )),
+                      
+                      
+                      tabItem(tabName = "dygraph2",
+                              h2("Quarterly Data Graph"),
+                              
+                              dygraphOutput("dygraph2")),
+                      
+                      tabItem(tabName = "table2",
+                              h2("Quarterly Data Table"),
+                              fluidRow(
+                                DT::dataTableOutput("table2")),
+                              fluidRow(
+                                box(title = "Download Data", downloadButton("downloadData2", "Download"))
+                              )),
+                      
+                      
+                      tabItem(tabName = "dygraph3",
+                              h2("Yearly Data Graph"),
+                              
+                              dygraphOutput("dygraph3")),
+                      
+                      tabItem(tabName = "table3",
+                              h2("Yearly Data Table"),
+                              fluidRow(
+                                DT::dataTableOutput("table3")),
+                              fluidRow(
+                                box(title = "Download Data", downloadButton("downloadData3", "Download"))
+                              ))
                       
                         )))
                  
@@ -114,7 +158,7 @@ server <- function(input, output, session) {
   output$dygraph <- renderDygraph({
     dygraph(data()) %>%
       dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
-      dyAxis("y", label = "% Year-on-Year", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
+      dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
       dyCrosshair(direction = "vertical")
   })
@@ -133,6 +177,66 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       write.csv(data2(), file, row.names = FALSE)
+    },
+    contentType = "csv"
+  )
+  
+  data3 <- reactive({
+    databasequarterly[,input$selector4]
+  })
+  
+  output$dygraph2 <- renderDygraph({
+    dygraph(data3()) %>%
+      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
+      dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
+      dyRangeSelector() %>%
+      dyCrosshair(direction = "vertical")
+  })
+  
+  data4 <- reactive({
+    database4 <- databasequarterlydf[which(databasequarterlydf$date >= input$selector6[1] & databasequarterlydf$date <= input$selector6[2]), input$selector5]
+  })
+  
+  output$table2 = DT::renderDataTable({
+    data4()
+  })
+  
+  output$downloadData2 <- downloadHandler(
+    filename = function() {
+      paste("BRCdata", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(data4(), file, row.names = FALSE)
+    },
+    contentType = "csv"
+  )
+  
+  data5 <- reactive({
+    databaseyearly[,input$selector7]
+  })
+  
+  output$dygraph3 <- renderDygraph({
+    dygraph(data5()) %>%
+      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
+      dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
+      dyRangeSelector() %>%
+      dyCrosshair(direction = "vertical")
+  })
+  
+  data6 <- reactive({
+    database6 <- databaseyearlydf[which(databaseyearlydf$date >= input$selector9[1] & databasequarterlydf$date <= input$selector9[2]), input$selector8]
+  })
+  
+  output$table3 = DT::renderDataTable({
+    data6()
+  })
+  
+  output$downloadData3 <- downloadHandler(
+    filename = function() {
+      paste("BRCdata", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(data6(), file, row.names = FALSE)
     },
     contentType = "csv"
   )
