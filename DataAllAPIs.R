@@ -8,6 +8,7 @@ library(jsonlite)
 library(httr)
 library(SPARQL)
 library(utils)
+library(tframePlus)
 
 setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
 
@@ -58,7 +59,7 @@ colnames(GVAmonthly_mom) <- "GVA Monthly (% MoM)"
 
 #GDP at Basic Prices - qna
 gdpquarterly <- pdfetch_ONS(c("ABMI"), "qna")
-colnames(gdpquarterly) <- "GDP Quarterly - Whole Economy (?m)"
+colnames(gdpquarterly) <- "GDP Quarterly - Whole Economy (£m)"
 
 #### Quartlery GVA, from: "GDP output approach - Low Level Aggregates" ####
 
@@ -72,13 +73,13 @@ gva_all <- read_excel(gva_all, sheet = 3, range = "D46:D132")
 dates <- seq(as.Date("1997-03-20"), length = nrow(gva_all), by = "quarters")
 dates <- LastDayInMonth(dates)
 GVAquarterly_all <- xts(x = gva_all, order.by=dates)
-colnames(GVAquarterly_all) <- "GVA Quarterly - Whole Economy (?m)"
+colnames(GVAquarterly_all) <- "GVA Quarterly - Whole Economy (£m)"
 
 #GVA Retail (CP £m)
 gva_retail <- "gva_all.xls"
 gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
 GVAquarterly_retail <- xts(x = gva_retail, order.by=dates)
-colnames(GVAquarterly_retail) <- "GVA Quarterly - Retail (?m)"
+colnames(GVAquarterly_retail) <- "GVA Quarterly - Retail (£m)"
 
 #### Average Weekly Earnings ####
 
@@ -194,16 +195,145 @@ colnames(employ) <- c("Employment Total UK", "Employment Total North East", "Emp
 #### NOMIS Data ####
 
 #Workforce Jobs
-nomiswfjobs <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_189_1.data.json?geography=2092957699,2092957698,2092957701,2092957700&industry=146800687&employment_status=1&measure=1,2&measures=20100")
+nomiswfjobs <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_189_1.data.json?geography=2092957699,2092957698,2092957701,2092957700&industry=146800687&employment_status=1&measure=1,2&measures=20100", flatten = TRUE)
 nomiswfjobs <- as.data.frame(nomiswfjobs$obs)
+nomiswfjobs <- nomiswfjobs[c(-1:-5, -7:-12, -14:-19, -21, -23:-29)]
+
+nomisyears <- seq(as.Date("2015-12-31"), length = 3, by = "years")
+
+nomiswfjobsengland <- subset(nomiswfjobs, geography.description == "England")
+nomiswfjobsenglandcount <- subset(nomiswfjobsengland, measure.description == "Count")
+nomiswfjobsenglandpercent <- subset(nomiswfjobsengland, measure.description == "Industry percentage")
+nomiswfjobsenglandcount <- nomiswfjobsenglandcount[c(-1:-3)]
+nomiswfjobsenglandpercent <- nomiswfjobsenglandpercent[c(-1:-3)]
+nomiswfjobsenglandcountxts <- xts(x = nomiswfjobsenglandcount, order.by = nomisyears)
+nomiswfjobsenglandpercentxts <- xts(x = nomiswfjobsenglandpercent, order.by = nomisyears)
+colnames(nomiswfjobsenglandcountxts) <- "WF Jobs count - England"
+colnames(nomiswfjobsenglandpercentxts) <- "WF Jobs % - England"
+
+nomiswfjobsgb <- subset(nomiswfjobs, geography.description == "Great Britain")
+nomiswfjobsgbcount <- subset(nomiswfjobsgb, measure.description == "Count")
+nomiswfjobsgbcount <- nomiswfjobsgbcount[c(-1:-3)]
+nomiswfjobsgbpercent <- subset(nomiswfjobsgb, measure.description == "Industry percentage")
+nomiswfjobsgbpercent <- nomiswfjobsgbpercent[c(-1:-3)]
+nomiswfjobsgbcountxts <- xts(x = nomiswfjobsgbcount, order.by = nomisyears)
+nomiswfjobsgbpercentxts <- xts(x = nomiswfjobsgbpercent, order.by = nomisyears)
+colnames(nomiswfjobsgbcountxts) <- "WF Jobs count - Great Britain"
+colnames(nomiswfjobsgbpercentxts) <- "WF Jobs % - Great Britain"
+
+nomiswfjobswales <- subset(nomiswfjobs, geography.description == "Wales")
+nomiswfjobswalescount <- subset(nomiswfjobswales, measure.description == "Count")
+nomiswfjobswalespercent <- subset(nomiswfjobswales, measure.description == "Industry percentage")
+nomiswfjobswalescount <- nomiswfjobswalescount[c(-1:-3)]
+nomiswfjobswalespercent <- nomiswfjobswalespercent[c(-1:-3)]
+nomiswfjobswalescountxts <- xts(x = nomiswfjobswalescount, order.by = nomisyears)
+nomiswfjobswalespercentxts <- xts(x = nomiswfjobswalespercent, order.by = nomisyears)
+colnames(nomiswfjobswalescountxts) <- "WF Jobs count - Wales"
+colnames(nomiswfjobswalespercentxts) <- "WF Jobs % - Wales"
+
+nomiswfjobsscotland <- subset(nomiswfjobs, geography.description == "Scotland")
+nomiswfjobsscotlandcount <- subset(nomiswfjobsscotland, measure.description == "Count")
+nomiswfjobsscotlandpercent <- subset(nomiswfjobsscotland, measure.description == "Industry percentage")
+nomiswfjobsscotlandcount <- nomiswfjobsscotlandcount[c(-1:-3)]
+nomiswfjobsscotlandpercent <- nomiswfjobsscotlandpercent[c(-1:-3)]
+nomiswfjobsscotlandcountxts <- xts(x = nomiswfjobsscotlandcount, order.by = nomisyears)
+nomiswfjobsscotlandpercentxts <- xts(x = nomiswfjobsscotlandpercent, order.by = nomisyears)
+colnames(nomiswfjobsscotlandcountxts) <- "WF Jobs count - Wales"
+colnames(nomiswfjobsscotlandpercentxts) <- "WF Jobs % - Wales"
 
 #Number of Shops
-nomisunits <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_141_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100")
+nomisunits <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_141_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100", flatten = TRUE)
 nomisunits <- as.data.frame(nomisunits$obs)
+nomisunits <- nomisunits[c(-1:-5, -7:-8, -10:-20, -23:-29)]
+
+nomisunitsyears <- seq(as.Date("2010-12-31"), length = 9, by = "years")
+
+nomisunitsengland <- subset(nomisunits, geography.description == "England")
+nomisunitsenglandtotal <- nomisunitsengland %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisunitsenglandtotal <- nomisunitsenglandtotal[c(-1)]
+nomisunitsenglandtotalxts <- xts(x = nomisunitsenglandtotal, order.by = nomisunitsyears)
+colnames(nomisunitsenglandtotalxts) <- "Local Units - England"
+
+nomisunitsuk <- subset(nomisunits, geography.description == "United Kingdom")
+nomisunitsuktotal <- nomisunitsuk %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisunitsuktotal <- nomisunitsuktotal[c(-1)]
+nomisunitsuktotalxts <- xts(x = nomisunitsuktotal, order.by = nomisunitsyears)
+colnames(nomisunitsuktotalxts) <- "Local Units - UK"
+
+nomisunitswales <- subset(nomisunits, geography.description == "Wales")
+nomisunitswalestotal <- nomisunitswales %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisunitswalestotal <- nomisunitswalestotal[c(-1)]
+nomisunitswalestotalxts <- xts(x = nomisunitswalestotal, order.by = nomisunitsyears)
+colnames(nomisunitswalestotalxts) <- "Local Units - Wales"
+
+nomisunitsni <- subset(nomisunits, geography.description == "Northern Ireland")
+nomisunitsnitotal <- nomisunitsni %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisunitsnitotal <- nomisunitsnitotal[c(-1)]
+nomisunitsnitotalxts <- xts(x = nomisunitsnitotal, order.by = nomisunitsyears)
+colnames(nomisunitsnitotalxts) <- "Local Units - Northern Ireland"
+
+nomisunitsscotland <- subset(nomisunits, geography.description == "Scotland")
+nomisunitsscotlandtotal <- nomisunitsscotland %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisunitsscotlandtotal <- nomisunitsscotlandtotal[c(-1)]
+nomisunitsscotlandtotalxts <- xts(x = nomisunitsscotlandtotal, order.by = nomisunitsyears)
+colnames(nomisunitsscotlandtotalxts) <- "Local Units - Scotland"
+
 
 #Number of Businesses
-nomisenterprises <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_142_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100")
+nomisenterprises <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_142_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100", flatten = TRUE)
 nomisenterprises <- as.data.frame(nomisenterprises$obs)
+nomisenterprises <- nomisenterprises[c(-1:-5, -7:-8, -10:-20, -23:-29)]
+
+nomisenterprisesengland <- subset(nomisenterprises, geography.description == "England")
+nomisenterprisesenglandtotal <- nomisenterprisesengland %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisenterprisesenglandtotal <- nomisenterprisesenglandtotal[c(-1)]
+nomisenterprisesenglandtotalxts <- xts(x = nomisenterprisesenglandtotal, order.by = nomisunitsyears)
+colnames(nomisenterprisesenglandtotalxts) <- "Businesses - England"
+
+nomisenterprisesuk <- subset(nomisenterprises, geography.description == "United Kingdom")
+nomisenterprisesuktotal <- nomisenterprisesuk %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisenterprisesuktotal <- nomisenterprisesuktotal[c(-1)]
+nomisenterprisesuktotalxts <- xts(x = nomisenterprisesuktotal, order.by = nomisunitsyears)
+colnames(nomisenterprisesuktotalxts) <- "Businesses - UK"
+
+nomisenterpriseswales <- subset(nomisenterprises, geography.description == "Wales")
+nomisenterpriseswalestotal <- nomisenterpriseswales %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisenterpriseswalestotal <- nomisenterpriseswalestotal[c(-1)]
+nomisenterpriseswalestotalxts <- xts(x = nomisenterpriseswalestotal, order.by = nomisunitsyears)
+colnames(nomisenterpriseswalestotalxts) <- "Businesses - Wales"
+
+nomisenterprisesni <- subset(nomisenterprises, geography.description == "Northern Ireland")
+nomisenterprisesnitotal <- nomisenterprisesni %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisenterprisesnitotal <- nomisenterprisesnitotal[c(-1)]
+nomisenterprisesnitotalxts <- xts(x = nomisenterprisesnitotal, order.by = nomisunitsyears)
+colnames(nomisenterprisesnitotalxts) <- "Businesses - Northern Ireland"
+
+nomisenterprisesscotland <- subset(nomisenterprises, geography.description == "Scotland")
+nomisenterprisesscotlandtotal <- nomisenterprisesscotland %>%
+  group_by(time.description) %>%
+  summarise(Total = sum(obs_value.value))
+nomisenterprisesscotlandtotal <- nomisenterprisesscotlandtotal[c(-1)]
+nomisenterprisesscotlandtotalxts <- xts(x = nomisenterprisesscotlandtotal, order.by = nomisunitsyears)
+colnames(nomisenterprisesscotlandtotalxts) <- "Businesses - Scotland"
+
 
 #### ASHE Data ####
 
@@ -535,7 +665,8 @@ HPlondon <- SPARQL(endpoint,query)$results
 HPlondon$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPlondon), by="1 month") - 1
 
 #Convert to xts
-HPlondon <- xts(x=HPlondon, order.by=HPlondon$ukhpi_refMonth)
+HPlondon <- xts(x=HPlondon[3:6], order.by=HPlondon$ukhpi_refMonth)
+colnames(HPlondon) <- c("House Price Average - London", "House Price Index - London", "House Price YoY - London", "House Price MoM - London")
 
 
 # Scotland
@@ -573,7 +704,8 @@ HPscotland <- SPARQL(endpoint,query)$results
 HPscotland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPscotland), by="1 month") - 1
 
 #Convert to xts
-HPscotland <- xts(x=HPscotland, order.by=HPscotland$ukhpi_refMonth)
+HPscotland <- xts(x=HPscotland[3:6], order.by=HPscotland$ukhpi_refMonth)
+colnames(HPscotland) <- c("House Price Average - Scotland", "House Price Index - Scotland", "House Price YoY - Scotland", "House Price MoM - Scotland")
 
 
 # House Prices - Wales
@@ -611,7 +743,8 @@ HPwales <- SPARQL(endpoint,query)$results
 HPwales$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPwales), by="1 month") - 1
 
 #Convert to xts
-HPwales <- xts(x=HPwales, order.by=HPwales$ukhpi_refMonth)
+HPwales <- xts(x=HPwales[3:6], order.by=HPwales$ukhpi_refMonth)
+colnames(HPwales) <- c("House Price Average - Wales", "House Price Index - Wales", "House Price YoY - Wales", "House Price MoM - Wales")
 
 
 # House Prices - Northern Ireland
@@ -649,7 +782,8 @@ HPnorthern_ireland <- SPARQL(endpoint,query)$results
 HPnorthern_ireland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPnorthern_ireland), by="1 month") - 1
 
 #Convert to xts
-HPnorthern_ireland <- xts(x=HPnorthern_ireland, order.by=HPnorthern_ireland$ukhpi_refMonth)
+HPnorthern_ireland <- xts(x=HPnorthern_ireland[3:6], order.by=HPnorthern_ireland$ukhpi_refMonth)
+colnames(HPnorthern_ireland) <- c("House Price Average - Northern Ireland", "House Price Index - Northern Ireland", "House Price YoY - Northern Ireland", "House Price MoM - Northern Ireland")
 
 
 # House Prices - England
@@ -687,7 +821,8 @@ HPengland <- SPARQL(endpoint,query)$results
 HPengland$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPengland), by="1 month") - 1
 
 #Convert to xts
-HPengland <- xts(x=HPengland, order.by=HPengland$ukhpi_refMonth)
+HPengland <- xts(x=HPengland[3:6], order.by=HPengland$ukhpi_refMonth)
+colnames(HPengland) <- c("House Price Average - England", "House Price Index - England", "House Price YoY - England", "House Price MoM - England")
 
 
 # House Prices - North East
@@ -725,7 +860,8 @@ HPnortheast <- SPARQL(endpoint,query)$results
 HPnortheast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPnortheast), by="1 month") - 1
 
 #Convert to xts
-HPnortheast <- xts(x=HPnortheast, order.by=HPnortheast$ukhpi_refMonth)
+HPnortheast <- xts(x=HPnortheast[3:6], order.by=HPnortheast$ukhpi_refMonth)
+colnames(HPnortheast) <- c("House Price Average - North East", "House Price Index - North East", "House Price YoY - North East", "House Price MoM - North East")
 
 
 # House Prices - North West
@@ -763,7 +899,8 @@ HPnorthwest <- SPARQL(endpoint,query)$results
 HPnorthwest$ukhpi_refMonth <- seq(as.Date("1995-02-01"), length.out = nrow(HPnorthwest), by="1 month") - 1
 
 #Convert to xts
-HPnorthwest <- xts(x=HPnorthwest, order.by=HPnorthwest$ukhpi_refMonth)
+HPnorthwest <- xts(x=HPnorthwest[3:6], order.by=HPnorthwest$ukhpi_refMonth)
+colnames(HPnorthwest) <- c("House Price Average - North West", "House Price Index - North West", "House Price YoY - North West", "House Price MoM - North West")
 
 
 # House Prices - Yorkshire & the Humber
@@ -801,7 +938,8 @@ HPyork <- SPARQL(endpoint,query)$results
 HPyork$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPyork), by="1 month") - 1
 
 #Convert to xts
-HPyork <- xts(x=HPyork, order.by=HPyork$ukhpi_refMonth)
+HPyork <- xts(x=HPyork[3:6], order.by=HPyork$ukhpi_refMonth)
+colnames(HPyork) <- c("House Price Average - Yorkshire & the Humber", "House Price Index - Yorkshire & the Humber", "House Price YoY - Yorkshire & the Humber", "House Price MoM - Yorkshire & the Humber")
 
 
 # House Prices - East Midlands
@@ -839,7 +977,8 @@ HPeastmid <- SPARQL(endpoint,query)$results
 HPeastmid$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPeastmid), by="1 month") - 1
 
 #Convert to xts
-HPeastmid <- xts(x=HPeastmid, order.by=HPeastmid$ukhpi_refMonth)
+HPeastmid <- xts(x=HPeastmid[3:6], order.by=HPeastmid$ukhpi_refMonth)
+colnames(HPeastmid) <- c("House Price Average - East Midlands", "House Price Index - East Midlands", "House Price YoY - East Midlands", "House Price MoM - East Midlands")
 
 
 # House Prices - West Midlands
@@ -877,7 +1016,8 @@ HPwestmid <- SPARQL(endpoint,query)$results
 HPwestmid$ukhpi_refMonth <- seq(as.Date("1995-02-01"), length.out = nrow(HPwestmid), by="1 month") - 1
 
 #Convert to xts
-HPwestmid <- xts(x=HPwestmid, order.by=HPwestmid$ukhpi_refMonth)
+HPwestmid <- xts(x=HPwestmid[3:6], order.by=HPwestmid$ukhpi_refMonth)
+colnames(HPwestmid) <- c("House Price Average - West Midlands", "House Price Index - West Midlands", "House Price YoY - West Midlands", "House Price MoM - West Midlands")
 
 
 # House Prices - East
@@ -915,7 +1055,8 @@ HPeast <- SPARQL(endpoint,query)$results
 HPeast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPeast), by="1 month") - 1
 
 #Convert to xts
-HPeast <- xts(x=HPeast, order.by=HPeast$ukhpi_refMonth)
+HPeast <- xts(x=HPeast[3:6], order.by=HPeast$ukhpi_refMonth)
+colnames(HPeast) <- c("House Price Average - East", "House Price Index - East", "House Price YoY - East", "House Price MoM - East")
 
 
 # House Prices - South East
@@ -953,7 +1094,8 @@ HPsoutheast <- SPARQL(endpoint,query)$results
 HPsoutheast$ukhpi_refMonth <- seq(as.Date("1992-05-01"), length.out = nrow(HPsoutheast), by="1 month") - 1
 
 #Convert to xts
-HPsoutheast <- xts(x=HPsoutheast, order.by=HPsoutheast$ukhpi_refMonth)
+HPsoutheast <- xts(x=HPsoutheast[3:6], order.by=HPsoutheast$ukhpi_refMonth)
+colnames(HPsoutheast) <- c("House Price Average - South East", "House Price Index - South East", "House Price YoY - South East", "House Price MoM - South East")
 
 
 # House Prices - South West
@@ -991,7 +1133,9 @@ HPsouthwest <- SPARQL(endpoint,query)$results
 HPsouthwest$ukhpi_refMonth <- seq(as.Date("1990-02-01"), length.out = nrow(HPsouthwest), by="1 month") - 1
 
 #Convert to xts
-HPsouthwest <- xts(x=HPsouthwest, order.by=HPsouthwest$ukhpi_refMonth)
+HPsouthwest <- xts(x=HPsouthwest[3:6], order.by=HPsouthwest$ukhpi_refMonth)
+colnames(HPsouthwest) <- c("House Price Average - South West", "House Price Index - South West", "House Price YoY - South West", "House Price MoM - South West")
+
 
 #### Consumer Price Inflation ####
 
@@ -1615,6 +1759,16 @@ colnames(spi_ambient) <- "SPI Ambient Food"
 
 #### Database Merge ####
 
-# merge xts objects into one big dataset
-database <- merge(cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy, cpi_electricals, cpi_food, cpi_fresh, cpi_furniture, cpi_health, cpi_nonfood, cpi_othnonfood, spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, awe, boe_ccards, boe_conscredit, boe_gbp, boe_house, boe_secured, employ$`Employment Rate UK`, unemp$`Unemployment Rate UK`, GVAmonthly_mom, GVAmonthly_yoy, rsi_val, rsi_vol, all = TRUE, fill = NA)
-databasedf <- data.frame(date=index(database), coredata(database))
+# merge xts objects into one big dataset and create dataframe for table - Monthly Data
+databasemonthly <- merge(cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy, cpi_electricals, cpi_food, cpi_fresh, cpi_furniture, cpi_health, cpi_nonfood, cpi_othnonfood, spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, awe, boe_ccards, boe_conscredit, boe_gbp, boe_house, boe_secured, HPengland, HPwales, HPscotland, HPnorthern_ireland, HPlondon, HPeast, HPeastmid, HPwestmid, HPnortheast, HPnorthwest, HPsoutheast, HPsouthwest, HPyork, employ, unemp, GVAmonthly_mom, GVAmonthly_yoy, rsi_val, rsi_vol, all = TRUE, fill = NA)
+databasemonthlydf <- data.frame(date=index(databasemonthly), coredata(databasemonthly))
+
+# merge xts objects into one big dataset and create dataframe for table - Quarterly Data
+databasequarterly <- merge(gva_all, gva_retail, output_all, output_retail, empjobs_all, empjobs_retail, selfjobs_all, selfjobs_retail, gdpquarterly, all = TRUE, fill = NA)
+index(databasequarterly) <- as.yearqtr(index(databasequarterly))
+databasequarterlydf <- data.frame(date=index(databasequarterly), coredata(databasequarterly))
+
+# merge xts objects into one big dataset and create dataframe for table - Yearly Data
+databaseyearly <- merge(nomiswfjobsenglandcountxts, nomiswfjobsenglandpercentxts, nomiswfjobsgbcountxts, nomiswfjobsgbpercentxts, nomiswfjobsscotlandcountxts, nomiswfjobsscotlandpercentxts, nomiswfjobswalescountxts, nomiswfjobswalespercentxts, nomisenterprisesenglandtotalxts, nomisenterprisesnitotalxts, nomisenterprisesscotlandtotalxts, nomisenterprisesuktotalxts, nomisenterpriseswalestotalxts, nomisunitsenglandtotalxts, nomisunitsnitotalxts, nomisunitsscotlandtotalxts, nomisunitsuktotalxts, nomisunitswalestotalxts, all = TRUE, fill = NA)
+index(databaseyearly) <- as.annually(index(databaseyearly))
+databaseyearlydf <- data.frame(date=index(databaseyearly), coredata(databaseyearly))
