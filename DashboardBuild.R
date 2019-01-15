@@ -2,18 +2,10 @@ library(shiny)
 library(dygraphs)
 library(shinydashboard)
 library(DT)
+library(xts)
 
 #colours
 BRCcol <- c("#92278F", "#00BBCE", "#262262", "#E6E7E8")
-
-#### Create Single Unified Database for Graph & Table ####
-
-# merge xts objects into one big dataset
-database <- merge(cpi_all, spi_all, all = TRUE, fill = NA)
-
-# correct column names so that series selector displays useful names
-
-
 
 
 #### Shiny UI ####
@@ -26,10 +18,10 @@ ui <- dashboardPage(skin = "blue",
                      menuItem("External Data Snapshot", icon = icon("th"), tabName = "extstats"),
                      menuItem("All Data Graph", icon = icon("chart-line"), tabName = "dygraph"),
                        conditionalPanel("input.sidebarmenu === 'dygraph'",
-                                        selectInput("selector", "Select Series", multiple = TRUE, choices = colnames(database), selected = "CPI.All.Items")),
+                                        selectInput("selector", "Select Series", multiple = TRUE, choices = colnames(databasemonthly), selected = "CPI.All.Items")),
                      menuItem("All Data Table", icon = icon("table"), tabName = "table"),
                        conditionalPanel("input.sidebarmenu === 'table'",
-                                        selectInput("selector2", "Select Series", multiple = TRUE, choices = colnames(database), selected = "CPI.All.Items"),
+                                        selectInput("selector2", "Select Series", multiple = TRUE, choices = colnames(databasemonthlydf), selected = c("CPI.All.Items", "date")),
                                         dateRangeInput("selector3", "Select Dates", start = "2001-01-01", end = Sys.Date(),
                                                        format = "yyyy-mm-dd", weekstart = 0))
                        
@@ -71,9 +63,9 @@ ui <- dashboardPage(skin = "blue",
                         h2("External Data Snapshot"),
                                     
                         fluidRow(
-                          valueBox(subtitle = "RSI Overall (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$J3L2, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = "RSI Food (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$EAIA, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = "RSI Online (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$KP3T, 1), 1),"%"), color = "red")),
+                          valueBox(subtitle = "RSI Overall (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - All retailing excluding automotive fuel`, 1), 1),"%"), color = "red"),
+                          valueBox(subtitle = "RSI Food (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - Predominantly food stores`, 1), 1),"%"), color = "red"),
+                          valueBox(subtitle = "RSI Online (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - Internet`, 1), 1),"%"), color = "red")),
                         
                         fluidRow(
                           valueBox(subtitle = "CPI All Items (YoY Change)", value = paste0(tail(cpi_all, 1), "%"), color = "yellow"),
@@ -86,13 +78,13 @@ ui <- dashboardPage(skin = "blue",
                           valueBox(subtitle = "GVA Retail Quarterly (£m)", value = paste0("£", tail(gva_retail, 1)), color = "green")),
                         
                         fluidRow(
-                          valueBox(subtitle = "Unempoyment Rate", value = paste0(tail(unemp$MGSX, 1), "%"), color = "aqua"),
+                          valueBox(subtitle = "Unempoyment Rate", value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua"),
                           valueBox(subtitle = "Jobs Whole Economy (000's)", value = tail(empjobs_all + selfjobs_all, 1), color = "aqua"),
                           valueBox(subtitle = "Jobs Retail (000's)", value = tail(empjobs_retail + selfjobs_retail, 1), color = "aqua")),
                         
                         fluidRow(
-                          valueBox(subtitle = "Average Weekly Earnings - Regular Pay (YoY Change)", value = paste0(tail(awe$KAI8, 1), "%"), color = "blue"),
-                          valueBox(subtitle = "Average Weekly Earnings - Real Regular Pay (YoY Change)", value = paste0(tail(awe$A2F9, 1), "%"), color = "blue"))),
+                          valueBox(subtitle = "Average Weekly Earnings - Regular Pay (YoY Change)", value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue"),
+                          valueBox(subtitle = "Average Weekly Earnings - Real Regular Pay (YoY Change)", value = paste0(tail(awe$`Real Regular Pay YoY Growth`, 1), "%"), color = "blue"))),
                         
                         
                       tabItem(tabName = "dygraph",
@@ -116,7 +108,7 @@ ui <- dashboardPage(skin = "blue",
 server <- function(input, output, session) {
   
   data <- reactive({
-    database[,input$selector]
+    databasemonthly[,input$selector]
   })
 
   output$dygraph <- renderDygraph({
@@ -128,20 +120,21 @@ server <- function(input, output, session) {
   })
   
   data2 <- reactive({
-    database[(database$date>=min(input$selector3[1]) & database$date<=max(input$selector3[2])),input$selector2]
+    database2 <- databasemonthlydf[which(databasemonthlydf$date >= input$selector3[1] & databasemonthlydf$date <= input$selector3[2]), input$selector2]
   })
   
   output$table = DT::renderDataTable({
-    DT::datatable(data2())
+    data2()
   })
   
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste(input$selector2, ".csv", sep = "")
+      paste("BRCdata", Sys.Date(), ".csv", sep = "")
     },
     content = function(file) {
-      write.csv(data2(), file(), row.names = TRUE)
-    }
+      write.csv(data2(), file, row.names = FALSE)
+    },
+    contentType = "csv"
   )
 }
 
@@ -149,3 +142,4 @@ server <- function(input, output, session) {
 #### Run Shiny ####
 
 shinyApp(ui, server)
+
