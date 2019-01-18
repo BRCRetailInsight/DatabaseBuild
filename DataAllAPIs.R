@@ -1,4 +1,3 @@
-library(dplyr)
 library(pdfetch)
 library(xts)
 library(readxl)
@@ -9,8 +8,15 @@ library(httr)
 library(SPARQL)
 library(utils)
 library(tframePlus)
+library(rgdal)
+library(maptools)
+library(rmapshaper)
+library(leaflet)
+library(reshape)
+library(dplyr)
 
-setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+
+setwd("Z:/Projects/RIADatabaseBuild")
 
 #### Bank of England Time Series ####
 
@@ -238,8 +244,8 @@ nomiswfjobsscotlandcount <- nomiswfjobsscotlandcount[c(-1:-3)]
 nomiswfjobsscotlandpercent <- nomiswfjobsscotlandpercent[c(-1:-3)]
 nomiswfjobsscotlandcountxts <- xts(x = nomiswfjobsscotlandcount, order.by = nomisyears)
 nomiswfjobsscotlandpercentxts <- xts(x = nomiswfjobsscotlandpercent, order.by = nomisyears)
-colnames(nomiswfjobsscotlandcountxts) <- "WF Jobs count - Wales"
-colnames(nomiswfjobsscotlandpercentxts) <- "WF Jobs % - Wales"
+colnames(nomiswfjobsscotlandcountxts) <- "WF Jobs count - Scotland"
+colnames(nomiswfjobsscotlandpercentxts) <- "WF Jobs % - Scotland"
 
 #Number of Shops
 nomisunits <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_141_1.data.json?geography=2092957699,2092957702,2092957701,2092957697,2092957700&industry=138416743,138416751,138416753...138416758,138416761,138416762,138416773...138416775,138416783...138416786,138416791,138416793...138416797,138416803...138416811,138416813,138416814,138416821&employment_sizeband=0&legal_status=0&measures=20100", flatten = TRUE)
@@ -337,7 +343,24 @@ colnames(nomisenterprisesscotlandtotalxts) <- "Businesses - Scotland"
 
 #### ASHE Data ####
 
-# ASHE Table 4.6a: Hourly pay - Excluding overtime (£)
+# Whole Economy Time-Series
+
+url <- "https://www.nomisweb.co.uk/api/v01/dataset/NM_99_1.data.csv?geography=2092957699,2092957697,2013265921...2013265932&sex=1...9&item=1...3&pay=6&measures=20100,20701"
+loc.download <- "ashe.csv"
+download.file(url,loc.download,mode = "wb")
+ashe <- "ashe.csv"
+ashe_all <- read.csv(ashe, header = TRUE, sep = ",")
+ashe_all <- ashe_all %>%
+  filter(MEASURES_NAME == "Value")
+ashe_all2 <- select(ashe_all, c(2, 8, 14, 26, 33))
+ashe_all2$Title <- paste(ashe_all2$GEOGRAPHY_NAME, ashe_all2$SEX_NAME, ashe_all2$ITEM_NAME, sep = " ")
+ashe_all2 <- select(ashe_all2, c(DATE_NAME, Title, OBS_VALUE))
+ashe_all3 <- melt(ashe_all2, id = c("DATE_NAME", "Title"))
+ashe_region <- cast(ashe_all3, DATE_NAME~Title+variable)
+asheyears <- seq(as.Date("1997-12-31"), length = 22, by = "years")
+ashe_regionxts <- xts(x = ashe_region, order.by = asheyears)
+
+# ASHE Table 4.6a: Hourly pay - Excluding overtime (£) - Including Industry Breakdown (but no time-series)
 
 url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/industry2digitsicashetable4/2018provisional/table42018provisional.zip"
 loc.download <- "ashe4.zip"
@@ -1423,6 +1446,194 @@ output_retail <- xts(x = output_retail, order.by=dates)
 colnames(output_retail) <- "Output per Hour - Retail"
 
 
+#### Regional Output Data ####
+
+#GVA per head (CP)
+url <- "https://www.ons.gov.uk/file?uri=/economy/grossvalueaddedgva/datasets/nominalregionalgrossvalueaddedbalancedperheadandincomecomponents/current/nominalregionalgvabperheadandincomecomponents.xlsx"
+loc.download <- "gva_per_head_all.xlsx"
+download.file(url,loc.download,mode = "wb")
+gva_per_head_all <- "gva_per_head_all.xlsx"
+dates <- seq(as.Date("1998-12-31"), length = 20, by = "years")
+dates <- LastDayInMonth(dates)
+
+#UK
+GVAperheaduk <- read_excel(gva_per_head_all, sheet = 5, range = "D3:W3", col_names = FALSE)
+GVAperheaduk <- t(GVAperheaduk)
+GVAperheaduk <- xts(x = GVAperheaduk, order.by=dates)
+colnames(GVAperheaduk) <- "GVA per Head - UK"
+
+#England
+GVAperheadengland <- read_excel(gva_per_head_all, sheet = 5, range = "D4:W4", col_names = FALSE)
+GVAperheadengland <- t(GVAperheadengland)
+GVAperheadengland <- xts(x = GVAperheadengland, order.by=dates)
+colnames(GVAperheadengland) <- "GVA per Head - England"
+
+#North East
+GVAperheadNE <- read_excel(gva_per_head_all, sheet = 5, range = "D5:W5", col_names = FALSE)
+GVAperheadNE <- t(GVAperheadNE)
+GVAperheadNE <- xts(x = GVAperheadNE, order.by=dates)
+colnames(GVAperheadNE) <- "GVA per Head - North East"
+
+#North West
+GVAperheadNW <- read_excel(gva_per_head_all, sheet = 5, range = "D15:W15", col_names = FALSE)
+GVAperheadNW <- t(GVAperheadNW)
+GVAperheadNW <- xts(x = GVAperheadNW, order.by=dates)
+colnames(GVAperheadNW) <- "GVA per Head - North West"
+
+#North Yorkshire & the Humber
+GVAperheadyork <- read_excel(gva_per_head_all, sheet = 5, range = "D41:W41", col_names = FALSE)
+GVAperheadyork <- t(GVAperheadyork)
+GVAperheadyork <- xts(x = GVAperheadyork, order.by=dates)
+colnames(GVAperheadyork) <- "GVA per Head - Yorkshire & The Humber"
+
+#East Midlands
+GVAperheadEM <- read_excel(gva_per_head_all, sheet = 5, range = "D57:W57", col_names = FALSE)
+GVAperheadEM <- t(GVAperheadEM)
+GVAperheadEM <- xts(x = GVAperheadEM, order.by=dates)
+colnames(GVAperheadEM) <- "GVA per Head - East Midlands"
+
+#West Midlands
+GVAperheadWM <- read_excel(gva_per_head_all, sheet = 5, range = "D72:W72", col_names = FALSE)
+GVAperheadWM <- t(GVAperheadWM)
+GVAperheadWM <- xts(x = GVAperheadWM, order.by=dates)
+colnames(GVAperheadWM) <- "GVA per Head - West Midlands"
+
+#East
+GVAperheadE <- read_excel(gva_per_head_all, sheet = 5, range = "D90:W90", col_names = FALSE)
+GVAperheadE <- t(GVAperheadE)
+GVAperheadE <- xts(x = GVAperheadE, order.by=dates)
+colnames(GVAperheadE) <- "GVA per Head - East"
+
+#London
+GVAperheadLondon <- read_excel(gva_per_head_all, sheet = 5, range = "D110:W110", col_names = FALSE)
+GVAperheadLondon <- t(GVAperheadLondon)
+GVAperheadLondon <- xts(x = GVAperheadLondon, order.by=dates)
+colnames(GVAperheadLondon) <- "GVA per Head - London"
+
+#South East
+GVAperheadSE <- read_excel(gva_per_head_all, sheet = 5, range = "D137:W137", col_names = FALSE)
+GVAperheadSE <- t(GVAperheadSE)
+GVAperheadSE <- xts(x = GVAperheadSE, order.by=dates)
+colnames(GVAperheadSE) <- "GVA per Head - South East"
+
+#South West
+GVAperheadSW <- read_excel(gva_per_head_all, sheet = 5, range = "D163:W163", col_names = FALSE)
+GVAperheadSW <- t(GVAperheadSW)
+GVAperheadSW <- xts(x = GVAperheadSW, order.by=dates)
+colnames(GVAperheadSW) <- "GVA per Head - South West"
+
+#Wales
+GVAperheadwales <- read_excel(gva_per_head_all, sheet = 5, range = "D180:W180", col_names = FALSE)
+GVAperheadwales <- t(GVAperheadwales)
+GVAperheadwales <- xts(x = GVAperheadwales, order.by=dates)
+colnames(GVAperheadwales) <- "GVA per Head - Wales"
+
+#Scotland
+GVAperheadscot <- read_excel(gva_per_head_all, sheet = 5, range = "D195:W195", col_names = FALSE)
+GVAperheadscot <- t(GVAperheadscot)
+GVAperheadscot <- xts(x = GVAperheadscot, order.by=dates)
+colnames(GVAperheadscot) <- "GVA per Head - Scotland"
+
+#Northern Ireland
+GVAperheadNI <- read_excel(gva_per_head_all, sheet = 5, range = "D224:W224", col_names = FALSE)
+GVAperheadNI <- t(GVAperheadNI)
+GVAperheadNI <- xts(x = GVAperheadNI, order.by=dates)
+colnames(GVAperheadNI) <- "GVA per Head - Northern Ireland"
+
+
+#GVA (CVM)
+url <- "https://www.ons.gov.uk/file?uri=/economy/grossvalueaddedgva/datasets/nominalandrealregionalgrossvalueaddedbalancedbyindustry/current/nominalandrealregionalgvabbyindustry.xlsx"
+loc.download <- "gva_region.xlsx"
+download.file(url,loc.download,mode = "wb")
+gva_region <- "gva_region.xlsx"
+dates <- seq(as.Date("1998-12-31"), length = 20, by = "years")
+dates <- LastDayInMonth(dates)
+
+#UK
+GVAuk <- read_excel(gva_region, sheet = 3, range = "E58:X58", col_names = FALSE)
+GVAuk <- t(GVAuk)
+GVAuk <- xts(x = GVAuk, order.by=dates)
+colnames(GVAuk) <- "GVA - UK"
+
+#England
+GVAengland <- read_excel(gva_region, sheet = 3, range = "E174:X174", col_names = FALSE)
+GVAengland <- t(GVAengland)
+GVAengland <- xts(x = GVAengland, order.by=dates)
+colnames(GVAengland) <- "GVA - England"
+
+#North East
+GVANE <- read_excel(gva_region, sheet = 3, range = "E290:X290", col_names = FALSE)
+GVANE <- t(GVANE)
+GVANE <- xts(x = GVANE, order.by=dates)
+colnames(GVANE) <- "GVA - North East"
+
+#North West
+GVANW <- read_excel(gva_region, sheet = 3, range = "E406:X406", col_names = FALSE)
+GVANW <- t(GVANW)
+GVANW <- xts(x = GVANW, order.by=dates)
+colnames(GVANW) <- "GVA - North West"
+
+#North Yorkshire & the Humber
+GVAyork <- read_excel(gva_region, sheet = 3, range = "E522:X522", col_names = FALSE)
+GVAyork <- t(GVAyork)
+GVAyork <- xts(x = GVAyork, order.by=dates)
+colnames(GVAyork) <- "GVA - Yorkshire & The Humber"
+
+#East Midlands
+GVAEM <- read_excel(gva_region, sheet = 3, range = "E638:X638", col_names = FALSE)
+GVAEM <- t(GVAEM)
+GVAEM <- xts(x = GVAEM, order.by=dates)
+colnames(GVAEM) <- "GVA - East Midlands"
+
+#West Midlands
+GVAWM <- read_excel(gva_region, sheet = 3, range = "E754:X754", col_names = FALSE)
+GVAWM <- t(GVAWM)
+GVAWM <- xts(x = GVAWM, order.by=dates)
+colnames(GVAWM) <- "GVA - West Midlands"
+
+#East
+GVAE <- read_excel(gva_region, sheet = 3, range = "E870:X870", col_names = FALSE)
+GVAE <- t(GVAE)
+GVAE <- xts(x = GVAE, order.by=dates)
+colnames(GVAE) <- "GVA - East"
+
+#London
+GVALondon <- read_excel(gva_region, sheet = 3, range = "E986:X986", col_names = FALSE)
+GVALondon <- t(GVALondon)
+GVALondon <- xts(x = GVALondon, order.by=dates)
+colnames(GVALondon) <- "GVA - London"
+
+#South East
+GVASE <- read_excel(gva_region, sheet = 3, range = "E1102:X1102", col_names = FALSE)
+GVASE <- t(GVASE)
+GVASE <- xts(x = GVASE, order.by=dates)
+colnames(GVASE) <- "GVA - South East"
+
+#South West
+GVASW <- read_excel(gva_region, sheet = 3, range = "E1218:X1218", col_names = FALSE)
+GVASW <- t(GVASW)
+GVASW <- xts(x = GVASW, order.by=dates)
+colnames(GVASW) <- "GVA - South West"
+
+#Wales
+GVAwales <- read_excel(gva_region, sheet = 3, range = "E1334:X1334", col_names = FALSE)
+GVAwales <- t(GVAwales)
+GVAwales <- xts(x = GVAwales, order.by=dates)
+colnames(GVAwales) <- "GVA - Wales"
+
+#Scotland
+GVAscot <- read_excel(gva_region, sheet = 3, range = "E1450:X1450", col_names = FALSE)
+GVAscot <- t(GVAscot)
+GVAscot <- xts(x = GVAscot, order.by=dates)
+colnames(GVAscot) <- "GVA - Scotland"
+
+#Northern Ireland
+GVANI <- read_excel(gva_region, sheet = 3, range = "E1566:X1566", col_names = FALSE)
+GVANI <- t(GVANI)
+GVANI <- xts(x = GVANI, order.by=dates)
+colnames(GVANI) <- "GVA - Northern Ireland"
+
+
 #### Retail Sales Index ####
 
 # Volume data: RETAIL SALES INDEX: VOLUME SEASONALLY ADJUSTED PERCENTAGE CHANGE ON SAME MONTH A YEAR EARLIER
@@ -1436,8 +1647,6 @@ colnames(output_retail) <- "Output per Hour - Retail"
 # "IDOD" = "RSI Volumes - Other Non-Food Stores" 
 # "J5DK" = "RSI Volumes - Non-Store retailing"
 # "JO4C" = "RSI Volumes - Fuel"
-
-# Fetch data from ONS and convert to month only (so no days)
 
 
 rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH","IDOD","JO4C","J5DK"), "DRSI")
@@ -1561,7 +1770,7 @@ W_J58N=11550
 
 
 #### DRI Data ####
-
+setwd("Z:/Projects/RDataAggregation/")
 source("DRIData.R")
 
 #,"XLConnect","rJava", "ReporteRs"
@@ -1580,7 +1789,7 @@ adddateFF=length(seq(from=ISOdate(2017,11,1), to=endateFF, by="months"))-1
 adddateDRI=length(seq(from=ISOdate(2017,11,1), to=endateDRI, by="months"))-1 
 
 
-setwd("Z:/Projects/RDataAggregation/")
+
 
 # Read-in DRI
 
@@ -1671,7 +1880,7 @@ names(FF)[7]="Footfall High Street 3 month average (% yoy change):BRC-Springboar
 names(FF)[8]="Footfall Shopping Centre 3 month average (% yoy change):BRC-Springboard"
 names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboard"
 
-setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+setwd("Z:/Projects/RIADatabaseBuild")
 
 
 #### Shop Price Inflation ####
@@ -1764,9 +1973,116 @@ databasemonthly <- merge(cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy,
 databasemonthlydf <- data.frame(date=index(databasemonthly), coredata(databasemonthly))
 
 # merge xts objects into one big dataset and create dataframe for table - Quarterly Data
-databasequarterly <- merge(gva_all, gva_retail, output_all, output_retail, empjobs_all, empjobs_retail, selfjobs_all, selfjobs_retail, gdpquarterly, all = TRUE, fill = NA)
+databasequarterly <- merge(GVAquarterly_all, GVAquarterly_retail, output_all, output_retail, empjobsquarterly_all, empjobsquarterly_retail, selfjobsquarterly_all, selfjobsquarterly_retail, gdpquarterly, all = TRUE, fill = NA)
 databasequarterlydf <- data.frame(date=index(databasequarterly), coredata(databasequarterly))
 
 # merge xts objects into one big dataset and create dataframe for table - Yearly Data
-databaseyearly <- merge(nomiswfjobsenglandcountxts, nomiswfjobsenglandpercentxts, nomiswfjobsgbcountxts, nomiswfjobsgbpercentxts, nomiswfjobsscotlandcountxts, nomiswfjobsscotlandpercentxts, nomiswfjobswalescountxts, nomiswfjobswalespercentxts, nomisenterprisesenglandtotalxts, nomisenterprisesnitotalxts, nomisenterprisesscotlandtotalxts, nomisenterprisesuktotalxts, nomisenterpriseswalestotalxts, nomisunitsenglandtotalxts, nomisunitsnitotalxts, nomisunitsscotlandtotalxts, nomisunitsuktotalxts, nomisunitswalestotalxts, all = TRUE, fill = NA)
+databaseyearly <- merge(nomiswfjobsenglandcountxts, nomiswfjobsenglandpercentxts, nomiswfjobsgbcountxts, nomiswfjobsgbpercentxts, nomiswfjobsscotlandcountxts, nomiswfjobsscotlandpercentxts, nomiswfjobswalescountxts, nomiswfjobswalespercentxts, nomisenterprisesenglandtotalxts, nomisenterprisesnitotalxts, nomisenterprisesscotlandtotalxts, nomisenterprisesuktotalxts, nomisenterpriseswalestotalxts, nomisunitsenglandtotalxts, nomisunitsnitotalxts, nomisunitsscotlandtotalxts, nomisunitsuktotalxts, nomisunitswalestotalxts, GVAE, GVAEM, GVAengland, GVALondon, GVANE, GVANI, GVANW, GVAscot, GVASE, GVASW, GVAuk, GVAwales, GVAWM, GVAyork, GVAperheadE, GVAperheadEM, GVAperheadengland, GVAperheadLondon, GVAperheadNE, GVAperheadNI, GVAperheadNW, GVAperheadscot, GVAperheadSE, GVAperheadSW, GVAperheaduk, GVAperheadwales, GVAperheadWM, GVAperheadyork, ashe_regionxts, all = TRUE, fill = NA)
 databaseyearlydf <- data.frame(date=index(databaseyearly), coredata(databaseyearly))
+
+
+#### Map Stats File Preparation ####
+
+setwd("Z:/Projects/RIADatabaseBuild")
+
+## UK Countries
+
+#import shapefiles
+gbcountries <- readOGR(dsn = file.path("Countries_December_2016_Full_Clipped_Boundaries_in_Great_Britain.shp"), stringsAsFactors = F)
+nicountries <- readOGR(dsn = file.path("OSNI_Open_Data_Largescale_Boundaries__NI_Outline.shp"), stringsAsFactors = F)
+
+#Prepare shapefile variables for merging
+gbcountries <- subset(gbcountries, select = -c(objectid,ctry16cd,ctry16nmw,bng_e,bng_n,long,lat,st_areasha,st_lengths))
+nicountries <- subset(nicountries, select = -c(ID,Area_SqKM,OBJECTID))
+names(nicountries)[names(nicountries)=="NAME"] <- "ctry16nm"
+
+#merge shapefiles
+row.names(nicountries) <- paste("nicountries", row.names(nicountries), sep="_")
+row.names(gbcountries) <- paste("gbcountries", row.names(gbcountries), sep="_")
+gbcountries <- spTransform(gbcountries, CRS("+proj=longlat +datum=WGS84"))
+nicountries <- spTransform(nicountries, CRS("+proj=longlat +datum=WGS84"))
+ukcountries <- spRbind(gbcountries,nicountries)
+
+#create country database
+countrycalcs <- data.frame("ctry16nm" = c("England", "Scotland", "Wales", "Outline of Northern Ireland"),
+                           "Unemployment" = c(tail(unemp$`Unemployment Rate England`, 1), tail(unemp$`Unemployment Rate Scotland`, 1), tail(unemp$`Unemployment Rate Wales`, 1), tail(unemp$`Unemployment Rate Northern Ireland`, 1)),
+                           "Employment" = c(tail(employ$`Employment Total England`, 1), tail(employ$`Employment Total Scotland`, 1), tail(employ$`Employment Total Wales`, 1), tail(employ$`Employment Total Northern Ireland`, 1)),
+                           "Workforce Jobs" = c(tail(nomiswfjobsenglandcount$obs_value.value, 1), tail(nomiswfjobsscotlandcount$obs_value.value, 1), tail(nomiswfjobswalescount$obs_value.value, 1), NA),
+                           "Number of Retailers" = c(tail(nomisenterprisesenglandtotal$Total, 1), tail(nomisenterprisesscotlandtotal$Total, 1), tail(nomisenterpriseswalestotal$Total, 1), tail(nomisenterprisesnitotal$Total, 1)),
+                           "Number of Shops" = c(tail(nomisunitsenglandtotal$Total, 1), tail(nomisunitsscotlandtotal$Total, 1), tail(nomisunitswalestotal$Total, 1), tail(nomisunitsnitotal$Total, 1)),
+                           "Median Hourly Wage - Whole Economy" = c(AsheEnglandAll$X__4, AsheScotlandAll$X__4, AsheWalesAll$X__4, AsheNorthIreAll$X__4),
+                           "Median Hourly Wage - Retail" = c(NA, AsheScotlandRetail$X__4, AsheWalesRetail$X__4, NA),
+                           "Average House Price" = c(tail(HPengland$`House Price Average - England`, 1), tail(HPscotland$`House Price Average - Scotland`, 1), tail(HPwales$`House Price Average - Wales`, 1), tail(HPnorthern_ireland$`House Price Average - Northern Ireland`, 1)),
+                           "GVA" = c(tail(GVAengland$`GVA - England`, 1), tail(GVAscot$`GVA - Scotland`, 1), tail(GVAwales$`GVA - Wales`, 1), tail(GVANI$`GVA - Northern Ireland`, 1)),
+                           "GVA per Head" = c(tail(GVAperheadengland$`GVA per Head - England`, 1), tail(GVAperheadscot$`GVA per Head - Scotland`, 1), tail(GVAperheadscot$`GVA per Head - Scotland`, 1), tail(GVAperheadNI$`GVA per Head - Northern Ireland`, 1)), 
+                           stringsAsFactors = TRUE)
+
+#merge variables from excel imported data to spatial dataframe.
+ukcountries <- merge(ukcountries, countrycalcs, by.x = "ctry16nm", by.y = "ctry16nm")
+
+#change name of Northern Ireland
+ukcountries@data$ctry16nm[4] <- "Northern Ireland"
+
+#Simplify map to reduce memory use
+gc()
+ukcountries <- rmapshaper::ms_simplify(ukcountries)
+
+#create colour palette for continuous colour variation (adjust number to how many intervals you want)
+pal1 <- colorBin("Greens", countrycalcs$Unemployment.Rate.England, 4, pretty = TRUE)
+
+
+## UK NUTS1 Regions
+
+#import shapefiles
+ukregions <- readOGR(dsn = file.path("NUTS_Level_1_January_2018_Full_Extent_Boundaries_in_the_United_Kingdom.shp"), stringsAsFactors = F)
+
+#create regional database
+regioncalcs <- data.frame("nuts118cd" = c("UKC", "UKD", "UKE", "UKF", "UKG", "UKH", "UKI", "UKJ", "UKK", "UKL", "UKM", "UKN"),
+                          "Unemployment" = c(tail(unemp$`Unemployment Rate North East`, 1), tail(unemp$`Unemployment Rate North West`, 1), tail(unemp$`Unemployment Rate Yorkshire & the Humber`, 1), tail(unemp$`Unemployment Rate East Midlands`, 1), tail(unemp$`Unemployment Rate West Midlands`, 1), tail(unemp$`Unemployment Rate East`, 1), tail(unemp$`Unemployment Rate London`, 1), tail(unemp$`Unemployment Rate South East`, 1), tail(unemp$`Unemployment Rate South West`, 1), tail(unemp$`Unemployment Rate Wales`, 1), tail(unemp$`Unemployment Rate Scotland`, 1), tail(unemp$`Unemployment Rate Northern Ireland`, 1)),
+                          "Employment" = c(tail(employ$`Employment Total North East`, 1), tail(employ$`Employment Total North West`, 1), tail(employ$`Employment Total Yorkshire & the Humber`, 1), tail(employ$`Employment Total East Midlands`, 1), tail(employ$`Employment Total West Midlands`, 1), tail(employ$`Employment Total East`, 1), tail(employ$`Employment Total London`, 1), tail(employ$`Employment Total South East`, 1), tail(employ$`Employment Total South West`, 1), tail(employ$`Employment Total Wales`, 1), tail(employ$`Employment Total Scotland`, 1), tail(employ$`Employment Total Northern Ireland`, 1)),
+                          "Median Hourly Wage - Whole Economy" = c(AsheNorthEastAll$X__4, AsheNorthWestAll$X__4, AsheYorkhumbAll$X__4, AsheEastMidAll$X__4, AsheWestMidAll$X__4, AsheEastAll$X__4, AsheLondonAll$X__4, AsheSouthEastAll$X__4, AsheSouthWestAll$X__4, AsheWalesAll$X__4, AsheScotlandAll$X__4, AsheNorthIreAll$X__4),
+                          "Median Hourly Wage - Retail" = c(AsheNorthEastRetail$X__4, AsheNorthWestRetail$X__4, AsheYorkhumbRetail$X__4, AsheEastMidRetail$X__4, AsheWestMidRetail$X__4, AsheEastRetail$X__4, AsheLondonRetail$X__4, AsheSouthEastRetail$X__4, AsheSouthWestRetail$X__4, AsheWalesRetail$X__4, AsheScotlandRetail$X__4, NA),
+                          "Average House Price" = c(tail(HPnortheast$`House Price Average - North East`, 1), tail(HPnorthwest$`House Price Average - North West`, 1), tail(HPyork$`House Price Average - Yorkshire & the Humber`, 1), tail(HPeastmid$`House Price Average - East Midlands`, 1), tail(HPwestmid$`House Price Average - West Midlands`, 1), tail(HPeast$`House Price Average - East`, 1), tail(HPlondon$`House Price Average - London`, 1), tail(HPsoutheast$`House Price Average - South East`, 1), tail(HPsouthwest$`House Price Average - South West`, 1), tail(HPwales$`House Price Average - Wales`, 1), tail(HPscotland$`House Price Average - Scotland`, 1), tail(HPnorthern_ireland$`House Price Average - Northern Ireland`, 1)),
+                          "GVA" = c(tail(GVANE$`GVA - North East`, 1), tail(GVANW$`GVA - North West`, 1), tail(GVAyork$`GVA - Yorkshire & The Humber`, 1), tail(GVAEM$`GVA - East Midlands`, 1), tail(GVAWM$`GVA - West Midlands`, 1), tail(GVAE$`GVA - East`, 1), tail(GVALondon$`GVA - London`, 1), tail(GVASE$`GVA - South East`, 1), tail(GVASW$`GVA - South West`, 1), tail(GVAwales$`GVA - Wales`, 1), tail(GVAscot$`GVA - Scotland`, 1), tail(GVANI$`GVA - Northern Ireland`, 1)),
+                          "GVA per Head" = c(tail(GVAperheadNE$`GVA per Head - North East`, 1), tail(GVAperheadNW$`GVA per Head - North West`, 1), tail(GVAperheadyork$`GVA per Head - Yorkshire & The Humber`, 1), tail(GVAperheadEM$`GVA per Head - East Midlands`, 1), tail(GVAperheadWM$`GVA per Head - West Midlands`, 1), tail(GVAperheadE$`GVA per Head - East`, 1), tail(GVAperheadLondon$`GVA per Head - London`, 1), tail(GVAperheadSE$`GVA per Head - South East`, 1), tail(GVAperheadSW$`GVA per Head - South West`, 1), tail(GVAperheadwales$`GVA per Head - Wales`, 1), tail(GVAperheadscot$`GVA per Head - Scotland`, 1), tail(GVAperheadNI$`GVA per Head - Northern Ireland`, 1)),
+                          stringsAsFactors = FALSE)
+
+#merge variables from excel imported data to spatial dataframe. 
+ukregions <- merge(ukregions, regioncalcs, by.x = "nuts118cd", by.y = "nuts118cd")
+
+#Simplify map to reduce memory use
+gc()
+ukregions <- rmapshaper::ms_simplify(ukregions)
+
+#create colour palette for continuous colour variation (adjust number to how many intervals you want)
+pal2 <- colorBin("Greens", regioncalcs$Unemployment.Rate.North.East, 9, pretty = TRUE)
+
+#Create nation data for download button (map tab)
+englanddata <- merge(to.yearly(unemp$`Unemployment Rate England`, OHLC = FALSE), to.yearly(employ$`Employment Total England`, OHLC = FALSE), nomiswfjobsenglandcountxts$`WF Jobs count - England`, nomisenterprisesenglandtotalxts$`Businesses - England`, nomisunitsenglandtotalxts$`Local Units - England`, GVAengland$`GVA - England`, GVAperheadengland$`GVA per Head - England`, all = TRUE, fill = NA)
+englanddata <- data.frame(date=index(englanddata), coredata(englanddata))
+walesdata <- merge(to.yearly(unemp$`Unemployment Rate Wales`, OHLC = FALSE), to.yearly(employ$`Employment Total Wales`, OHLC = FALSE), nomiswfjobswalescountxts$`WF Jobs count - Wales`, nomisenterpriseswalestotalxts$`Businesses - Wales`, nomisunitswalestotalxts$`Local Units - Wales`, GVAwales$`GVA - Wales`, GVAperheadwales$`GVA per Head - Wales`, all = TRUE, fill = NA)
+walesdata <- data.frame(date=index(walesdata), coredata(walesdata))
+scotlanddata <- merge(to.yearly(unemp$`Unemployment Rate Scotland`, OHLC = FALSE), to.yearly(employ$`Employment Total Scotland`, OHLC = FALSE), nomiswfjobsscotlandcountxts$`WF Jobs count - Scotland`, nomisenterprisesscotlandtotalxts$`Businesses - Scotland`, nomisunitsscotlandtotalxts$`Local Units - Scotland`, GVAscot$`GVA - Scotland`, GVAperheadscot$`GVA per Head - Scotland`, all = TRUE, fill = NA)
+scotlanddata <- data.frame(date=index(scotlanddata), coredata(scotlanddata))
+nidata <- merge(to.yearly(unemp$`Unemployment Rate Northern Ireland`, OHLC = FALSE), to.yearly(employ$`Employment Total Northern Ireland`, OHLC = FALSE), nomisenterprisesnitotalxts$`Businesses - Northern Ireland`, nomisunitsnitotalxts$`Local Units - Northern Ireland`, GVANI$`GVA - Northern Ireland`, GVAperheadNI$`GVA per Head - Northern Ireland`, all = TRUE, fill = NA)
+nidata <- data.frame(date=index(nidata), coredata(nidata))
+  
+# Create region data for download button (map tab)
+nedata <- merge(to.yearly(unemp$`Unemployment Rate North East`, OHLC = FALSE), to.yearly(employ$`Employment Total North East`, OHLC = FALSE), GVANE$`GVA - North East`, GVAperheadNE$`GVA per Head - North East`, all = TRUE, fill = NA)
+nedata <- data.frame(date=index(nedata), coredata(nedata))
+nwdata <- merge(to.yearly(unemp$`Unemployment Rate North West`, OHLC = FALSE), to.yearly(employ$`Employment Total North West`, OHLC = FALSE), GVANW$`GVA - North West`, GVAperheadNW$`GVA per Head - North West`, all = TRUE, fill = NA)
+nwdata <- data.frame(date=index(nwdata), coredata(nwdata))
+yorkdata <- merge(to.yearly(unemp$`Unemployment Rate Yorkshire & the Humber`, OHLC = FALSE), to.yearly(employ$`Employment Total Yorkshire & the Humber`, OHLC = FALSE), GVAyork$`GVA - Yorkshire & The Humber`, GVAperheadyork$`GVA per Head - Yorkshire & The Humber`, all = TRUE, fill = NA)
+yorkdata <- data.frame(date=index(yorkdata), coredata(yorkdata))
+emdata <- merge(to.yearly(unemp$`Unemployment Rate East Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total East Midlands`, OHLC = FALSE), GVAEM$`GVA - East Midlands`, GVAperheadEM$`GVA per Head - East Midlands`, all = TRUE, fill = NA)
+emdata <- data.frame(date=index(emdata), coredata(emdata))
+wmdata <- merge(to.yearly(unemp$`Unemployment Rate West Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total West Midlands`, OHLC = FALSE), GVAWM$`GVA - West Midlands`, GVAperheadWM$`GVA per Head - West Midlands`, all = TRUE, fill = NA)
+wmdata <- data.frame(date=index(wmdata), coredata(wmdata))
+edata <- merge(to.yearly(unemp$`Unemployment Rate East`, OHLC = FALSE), to.yearly(employ$`Employment Total East`, OHLC = FALSE), GVAE$`GVA - East`, GVAperheadE$`GVA per Head - East`, all = TRUE, fill = NA)
+edata <- data.frame(date=index(edata), coredata(edata))
+londondata <- merge(to.yearly(unemp$`Unemployment Rate London`, OHLC = FALSE), to.yearly(employ$`Employment Total London`, OHLC = FALSE), GVALondon$`GVA - London`, GVAperheadLondon$`GVA per Head - London`, all = TRUE, fill = NA)
+londondata <- data.frame(date=index(londondata), coredata(londondata))
+sedata <- merge(to.yearly(unemp$`Unemployment Rate South East`, OHLC = FALSE), to.yearly(employ$`Employment Total South East`, OHLC = FALSE), GVASE$`GVA - South East`, GVAperheadSE$`GVA per Head - South East`, all = TRUE, fill = NA)
+sedata <- data.frame(date=index(sedata), coredata(sedata))
+swdata <- merge(to.yearly(unemp$`Unemployment Rate South West`, OHLC = FALSE), to.yearly(employ$`Employment Total South West`, OHLC = FALSE), GVASW$`GVA - South West`, GVAperheadSW$`GVA per Head - South West`, all = TRUE, fill = NA)
+swdata <- data.frame(date=index(swdata), coredata(swdata))

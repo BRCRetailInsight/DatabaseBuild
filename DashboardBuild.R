@@ -3,6 +3,8 @@ library(dygraphs)
 library(shinydashboard)
 library(DT)
 library(xts)
+library(leaflet)
+library(leaflet.extras)
 
 #colours
 BRCcol <- c("#92278F", "#00BBCE", "#262262", "#E6E7E8")
@@ -26,10 +28,10 @@ ui <- dashboardPage(skin = "blue",
                                                        format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("Quarterly Data Graph", icon = icon("chart-line"), tabName = "dygraph2"),
                      conditionalPanel("input.sidebarmenu === 'dygraph2'",
-                                      selectInput("selector4", "Select Series", multiple = TRUE, choices = colnames(databasequarterly), selected = "GVA.Whole.Economy")),
+                                      selectInput("selector4", "Select Series", multiple = TRUE, choices = colnames(databasequarterly), selected = "GDP.Quarterly...Whole.Economy...m.")),
                      menuItem("Quarterly Data Table", icon = icon("table"), tabName = "table2"),
                      conditionalPanel("input.sidebarmenu === 'table2'",
-                                      selectInput("selector5", "Select Series", multiple = TRUE, choices = colnames(databasequarterlydf), selected = c("GVA.Whole.Economy", "date")),
+                                      selectInput("selector5", "Select Series", multiple = TRUE, choices = colnames(databasequarterlydf), selected = c("GDP.Quarterly...Whole.Economy...m.", "date")),
                                       dateRangeInput("selector6", "Select Dates", start = "2001-01-01", end = Sys.Date(),
                                                      format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("Yearly Data Graph", icon = icon("chart-line"), tabName = "dygraph3"),
@@ -39,7 +41,9 @@ ui <- dashboardPage(skin = "blue",
                      conditionalPanel("input.sidebarmenu === 'table3'",
                                       selectInput("selector8", "Select Series", multiple = TRUE, choices = colnames(databaseyearlydf), selected = c("Local.Units...UK", "date")),
                                       dateRangeInput("selector9", "Select Dates", start = "2001-01-01", end = Sys.Date(),
-                                                     format = "yyyy-mm-dd", weekstart = 0))
+                                                     format = "yyyy-mm-dd", weekstart = 0)),
+                     menuItem("UK Nations Map", icon = icon("map-marked-alt"), tabName = "nationmap"),
+                     menuItem("UK Regions Map", icon = icon("map-marked-alt"), tabName = "regionmap")
                      
                      )),
                  
@@ -90,13 +94,13 @@ ui <- dashboardPage(skin = "blue",
                         
                         fluidRow(
                           valueBox(subtitle = "GVA Whole Economy (YoY Change)", value = paste0(tail(GVAmonthly_yoy), "%"), color = "green"),
-                          valueBox(subtitle = "GVA Whole Economy Quarterly (£m)", value = paste0("£", tail(gva_all, 1)), color = "green"),
-                          valueBox(subtitle = "GVA Retail Quarterly (£m)", value = paste0("£", tail(gva_retail, 1)), color = "green")),
+                          valueBox(subtitle = "GVA Whole Economy Quarterly (£m)", value = paste0("£", prettyNum(tail(gva_all, 1), big.mark = ",", scientific=FALSE)), color = "green"),
+                          valueBox(subtitle = "GVA Retail Quarterly (£m)", value = paste0("£", prettyNum(tail(gva_retail, 1), big.mark = ",", scientific=FALSE)), color = "green")),
                         
                         fluidRow(
                           valueBox(subtitle = "Unempoyment Rate", value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua"),
-                          valueBox(subtitle = "Jobs Whole Economy (000's)", value = tail(empjobs_all + selfjobs_all, 1), color = "aqua"),
-                          valueBox(subtitle = "Jobs Retail (000's)", value = tail(empjobs_retail + selfjobs_retail, 1), color = "aqua")),
+                          valueBox(subtitle = "Jobs Whole Economy (000's)", value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua"),
+                          valueBox(subtitle = "Jobs Retail (000's)", value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua")),
                         
                         fluidRow(
                           valueBox(subtitle = "Average Weekly Earnings - Regular Pay (YoY Change)", value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue"),
@@ -142,9 +146,28 @@ ui <- dashboardPage(skin = "blue",
                                 DT::dataTableOutput("table3")),
                               fluidRow(
                                 box(title = "Download Data", downloadButton("downloadData3", "Download"))
-                              ))
+                              )),
                       
-                        )))
+                      tabItem(tabName = "nationmap",
+                              h2("UK Nations Map"),
+                              div(class="outer",
+                                  leafletOutput("nationmap", height = "700")),
+                              fluidRow(
+                                box(title = "Download Data", 
+                                    selectInput("nationdataset", "Select Nation:", choices = c("England", "Wales", "Scotland", "Northern Ireland")),
+                                    downloadButton("downloadData4", "Download"))
+                              )),
+                      
+                      tabItem(tabName = "regionmap",
+                              h2("UK Regions Map"),
+                              div(class="outer",
+                                  leafletOutput("regionmap", height = "700")),
+                              fluidRow(
+                                box(title = "Download Data", 
+                                    selectInput("regiondataset", "Select Region:", choices = c("North East", "North West", "Yorkshire and the Humber", "East Midlands", "West Midlands", "East", "London", "South East", "South West", "Wales", "Scotland", "Northern Ireland")),
+                                    downloadButton("downloadData5", "Download"))
+                              )
+                      ))))
                  
 
 #### Shiny Server ####
@@ -240,10 +263,102 @@ server <- function(input, output, session) {
     },
     contentType = "csv"
   )
+  
+  output$nationmap <- renderLeaflet({
+    leaflet() %>% 
+      addPolygons(data = ukcountries, weight = 1, smoothFactor = 0.5,
+                  color = ~pal1(Unemployment.Rate.England), 
+                  opacity = 1.0, fillOpacity = 1.0,
+                  highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      bringToFront = TRUE), #%>%
+                  #addProviderTiles(providers$Esri.WorldStreetMap)
+                  popup = paste("Nation:", paste("<b>", ukcountries$ctry16nm, "</b>"), "<br>",
+                                "Unemployment:", paste("<b>", ukcountries$Unemployment.Rate.England, "%", "</b>"), "<br>",
+                                "Employment:", paste("<b>", prettyNum(ukcountries$Employment.Total.England, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "Work Force Jobs:", paste("<b>", prettyNum(ukcountries$Workforce.Jobs, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "Number of Retailers:", paste("<b>", prettyNum(ukcountries$Number.of.Retailers, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "Number of Shops:", paste("<b>", prettyNum(ukcountries$Number.of.Shops, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "Median Hourly Wage - Whole Economy:", paste("<b>", "£", ukcountries$Median.Hourly.Wage...Whole.Economy, "</b>"), "<br>",
+                                "Median Hourly Wage - Retail:", paste("<b>", "£", ukcountries$Median.Hourly.Wage...Retail, "</b>"), "<br>",
+                                "Average House Price:", paste("<b>", "£", prettyNum(ukcountries$House.Price.Average...England, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "GVA (Index):", paste("<b>", ukcountries$GVA...England, "</b>"), "<br>",
+                                "GVA per head:", paste("<b>", "£", prettyNum(ukcountries$GVA.per.Head...England, big.mark=",", scientific=FALSE), "</b>"))) #%>%
+                  #addLegend("bottomright", pal = pal1, values = ukcountries$GVAperhead,
+                  #title = "GVA per head (?)",
+                  #opacity = 1)
+  })
+  
+  output$regionmap <- renderLeaflet({
+    leaflet() %>% 
+      addPolygons(data = ukregions, weight = 1, smoothFactor = 0.5,
+                  color = ~pal2(Unemployment.Rate.North.East), 
+                  opacity = 1.0, fillOpacity = 1.0,
+                  highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      bringToFront = TRUE),
+                  popup = paste("Nation:", paste("<b>", ukregions$nuts118nm, "</b>"), "<br>",
+                                "Unemployment:", paste("<b>", ukregions$Unemployment.Rate.North.East, "%", "</b>"), "<br>",
+                                "Employment:", paste("<b>", prettyNum(ukregions$Employment.Total.North.East, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "Median Hourly Wage - Whole Economy:", paste("<b>", "£", ukregions$Median.Hourly.Wage...Whole.Economy, "</b>"), "<br>",
+                                "Median Hourly Wage - Retail:", paste("<b>", "£", ukregions$Median.Hourly.Wage...Retail, "</b>"), "<br>",
+                                "Average House Price:", paste("<b>", "£", prettyNum(ukregions$House.Price.Average...North.East, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
+                                "GVA (Index):", paste("<b>", ukregions$GVA...North.East, "</b>"), "<br>",
+                                "GVA per head:", paste("<b>", "£", prettyNum(ukregions$GVA.per.Head...North.East, big.mark=",", scientific=FALSE), "</b>"))
+                  ) #%>%
+                  #addProviderTiles(providers$Esri.WorldStreetMap)
+                  #popup = paste("Constituency:", uk$Area, "<br>", "In Poverty:", prettyNum(uk$PovertyNumberActual, big.mark=",", scientific=FALSE), "<br>")) %>%
+                  #addLegend("bottomright", pal = pal2, values = data$Unemployment.Rate.North.East)
+                  #title = "In Poverty",
+                  #opacity = 1)
+        })
+  
+  datasetInput1 <- reactive({
+    switch(input$nationdataset,
+           "England" = englanddata,
+           "Wales" = walesdata,
+           "Scotland" = scotlanddata,
+           "Northern Ireland" = nidata)
+  })
+  
+  datasetInput2 <- reactive({
+    switch(input$regiondataset,
+           "North East" = nedata,
+           "North West" = nwdata,
+           "Yorkshire and the Humber" = yorkdata,
+           "East Midlands" = emdata,
+           "West Midlands" = wmdata,
+           "East" = edata, 
+           "London" = londondata, 
+           "South East" = sedata, 
+           "South West" = swdata, 
+           "Wales" = walesdata, 
+           "Scotland" = scotlanddata, 
+           "Northern Ireland" = nidata
+           )
+  })
+  
+  output$downloadData4 <- downloadHandler(
+    filename = function() {
+      paste("BRCdata", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(datasetInput1(), file, row.names = FALSE)
+    },
+    contentType = "csv"
+  )
+  
+  output$downloadData5 <- downloadHandler(
+    filename = function() {
+      paste("BRCdata", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(datasetInput2(), file, row.names = FALSE)
+    },
+    contentType = "csv"
+  )
+  
 }
 
   
 #### Run Shiny ####
 
 shinyApp(ui, server)
-
