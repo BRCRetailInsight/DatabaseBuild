@@ -6,6 +6,11 @@ library(xts)
 library(leaflet)
 library(leaflet.extras)
 
+#This package includes progress indicator graphic for wait time during map plotting
+devtools::install_github("AnalytixWare/ShinySky")
+library(shinysky)
+
+
 #colours
 BRCcol <- c("#92278F", "#00BBCE", "#262262", "#E6E7E8")
 
@@ -52,7 +57,7 @@ ui <- dashboardPage(skin = "blue",
                     tabItems(
                           
                       tabItem(tabName = "brcstats",
-                        h2("BRC Data Snapshot"),
+                        h3("BRC Data Snapshot"),
                         
                         fluidRow(
                           valueBox(subtitle = "RSM Total (YoY Change)", value = paste0(round(tail(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`, 1), 1),"%"), color = "red"),
@@ -80,7 +85,7 @@ ui <- dashboardPage(skin = "blue",
                         
                         
                       tabItem(tabName = "extstats",
-                        h2("External Data Snapshot"),
+                        h3("External Data Snapshot"),
                                     
                         fluidRow(
                           valueBox(subtitle = "RSI Overall (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - All retailing excluding automotive fuel`, 1), 1),"%"), color = "red"),
@@ -108,12 +113,16 @@ ui <- dashboardPage(skin = "blue",
                         
                         
                       tabItem(tabName = "dygraph",
-                        h2("Monthly Data Graph"),
-                        
-                        dygraphOutput("dygraph")),
+                        h3("Monthly Data Graph"),
+                        fluidRow(
+                          dygraphOutput("dygraph")),
+                        fluidRow(
+                          h3("Legend"),
+                          textOutput("dylegend1"), width = 12)
+                        ),
                         
                       tabItem(tabName = "table",
-                        h2("Monthly Data Table"),
+                        h3("Monthly Data Table"),
                         fluidRow(
                         DT::dataTableOutput("table")),
                         fluidRow(
@@ -122,12 +131,16 @@ ui <- dashboardPage(skin = "blue",
                       
                       
                       tabItem(tabName = "dygraph2",
-                              h2("Quarterly Data Graph"),
-                              
-                              dygraphOutput("dygraph2")),
+                              h3("Quarterly Data Graph"),
+                              fluidRow(
+                                dygraphOutput("dygraph2")),
+                              fluidRow(
+                                h3("Legend"),
+                                textOutput("dylegend2"), width = 12)
+                              ),
                       
                       tabItem(tabName = "table2",
-                              h2("Quarterly Data Table"),
+                              h3("Quarterly Data Table"),
                               fluidRow(
                                 DT::dataTableOutput("table2")),
                               fluidRow(
@@ -136,12 +149,16 @@ ui <- dashboardPage(skin = "blue",
                       
                       
                       tabItem(tabName = "dygraph3",
-                              h2("Yearly Data Graph"),
-                              
-                              dygraphOutput("dygraph3")),
+                              h3("Yearly Data Graph"),
+                              fluidRow(
+                                dygraphOutput("dygraph3")),
+                              fluidRow(
+                                h3("Legend"),
+                                textOutput("dylegend3"), width = 12)
+                              ),
                       
                       tabItem(tabName = "table3",
-                              h2("Yearly Data Table"),
+                              h3("Yearly Data Table"),
                               fluidRow(
                                 DT::dataTableOutput("table3")),
                               fluidRow(
@@ -149,9 +166,9 @@ ui <- dashboardPage(skin = "blue",
                               )),
                       
                       tabItem(tabName = "nationmap",
-                              h2("UK Nations Map"),
+                              h3("UK Nations Map"),
                               div(class="outer",
-                                  leafletOutput("nationmap", height = "700")),
+                                  leafletOutput("nationmap", height = "700"), busyIndicator(text = "Map plotting in progress...", wait = 100)),
                               fluidRow(
                                 box(title = "Download Data", 
                                     selectInput("nationdataset", "Select Nation:", choices = c("England", "Wales", "Scotland", "Northern Ireland")),
@@ -159,9 +176,9 @@ ui <- dashboardPage(skin = "blue",
                               )),
                       
                       tabItem(tabName = "regionmap",
-                              h2("UK Regions Map"),
+                              h3("UK Regions Map"),
                               div(class="outer",
-                                  leafletOutput("regionmap", height = "700")),
+                                  leafletOutput("regionmap", height = "700"), busyIndicator(text = "Map plotting in progress...", wait = 100)),
                               fluidRow(
                                 box(title = "Download Data", 
                                     selectInput("regiondataset", "Select Region:", choices = c("North East", "North West", "Yorkshire and the Humber", "East Midlands", "West Midlands", "East", "London", "South East", "South West", "Wales", "Scotland", "Northern Ireland")),
@@ -183,6 +200,7 @@ server <- function(input, output, session) {
       dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
+      dyLegend(labelsDiv = "dylegend1") %>%
       dyCrosshair(direction = "vertical")
   })
   
@@ -213,6 +231,7 @@ server <- function(input, output, session) {
       dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
+      dyLegend(labelsDiv = "dylegend2") %>%
       dyCrosshair(direction = "vertical")
   })
   
@@ -243,6 +262,7 @@ server <- function(input, output, session) {
       dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
+      dyLegend(labelsDiv = "dylegend3") %>%
       dyCrosshair(direction = "vertical")
   })
   
