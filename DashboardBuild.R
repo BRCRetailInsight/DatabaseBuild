@@ -5,6 +5,7 @@ library(DT)
 library(xts)
 library(leaflet)
 library(leaflet.extras)
+library(timevis)
 
 #This package includes progress indicator graphic for wait time during map plotting
 devtools::install_github("AnalytixWare/ShinySky")
@@ -48,7 +49,8 @@ ui <- dashboardPage(skin = "blue",
                                       dateRangeInput("selector9", "Select Dates", start = "2001-01-01", end = Sys.Date(),
                                                      format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("UK Nations Map", icon = icon("map-marked-alt"), tabName = "nationmap"),
-                     menuItem("UK Regions Map", icon = icon("map-marked-alt"), tabName = "regionmap")
+                     menuItem("UK Regions Map", icon = icon("map-marked-alt"), tabName = "regionmap"),
+                     menuItem("BRC Release Calendar", icon = icon("calendar"), tabName = "calendar")
                      
                      )),
                  
@@ -126,7 +128,7 @@ ui <- dashboardPage(skin = "blue",
                         fluidRow(
                         DT::dataTableOutput("table")),
                         fluidRow(
-                          box(title = "Download Data", downloadButton("downloadData", "Download"))
+                          box(title = "Download Data", downloadButton("downloadData", "Download"), width = 12)
                         )),
                       
                       
@@ -144,7 +146,7 @@ ui <- dashboardPage(skin = "blue",
                               fluidRow(
                                 DT::dataTableOutput("table2")),
                               fluidRow(
-                                box(title = "Download Data", downloadButton("downloadData2", "Download"))
+                                box(title = "Download Data", downloadButton("downloadData2", "Download"), width = 12)
                               )),
                       
                       
@@ -162,7 +164,7 @@ ui <- dashboardPage(skin = "blue",
                               fluidRow(
                                 DT::dataTableOutput("table3")),
                               fluidRow(
-                                box(title = "Download Data", downloadButton("downloadData3", "Download"))
+                                box(title = "Download Data", downloadButton("downloadData3", "Download"), width = 12)
                               )),
                       
                       tabItem(tabName = "nationmap",
@@ -172,7 +174,7 @@ ui <- dashboardPage(skin = "blue",
                               fluidRow(
                                 box(title = "Download Data", 
                                     selectInput("nationdataset", "Select Nation:", choices = c("England", "Wales", "Scotland", "Northern Ireland")),
-                                    downloadButton("downloadData4", "Download"))
+                                    downloadButton("downloadData4", "Download"), width = 12)
                               )),
                       
                       tabItem(tabName = "regionmap",
@@ -182,9 +184,19 @@ ui <- dashboardPage(skin = "blue",
                               fluidRow(
                                 box(title = "Download Data", 
                                     selectInput("regiondataset", "Select Region:", choices = c("North East", "North West", "Yorkshire and the Humber", "East Midlands", "West Midlands", "East", "London", "South East", "South West", "Wales", "Scotland", "Northern Ireland")),
-                                    downloadButton("downloadData5", "Download"))
+                                    downloadButton("downloadData5", "Download"), width = 12)
                               )
-                      ))))
+                      ),
+                      
+                      tabItem(tabName = "calendar",
+                              h3("BRC Release Calendar"),
+                              fluidRow(
+                                timevisOutput("timelineGroups")
+                              ),
+                              fluidRow(
+                                actionButton("btn", "Focus around today")
+                              ))
+                      )))
                  
 
 #### Shiny Server ####
@@ -302,10 +314,12 @@ server <- function(input, output, session) {
                                 "Median Hourly Wage - Retail:", paste("<b>", "£", ukcountries$Median.Hourly.Wage...Retail, "</b>"), "<br>",
                                 "Average House Price:", paste("<b>", "£", prettyNum(ukcountries$House.Price.Average...England, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
                                 "GVA (Index):", paste("<b>", ukcountries$GVA...England, "</b>"), "<br>",
-                                "GVA per head:", paste("<b>", "£", prettyNum(ukcountries$GVA.per.Head...England, big.mark=",", scientific=FALSE), "</b>"))) #%>%
-                  #addLegend("bottomright", pal = pal1, values = ukcountries$GVAperhead,
-                  #title = "GVA per head (?)",
-                  #opacity = 1)
+                                "GVA per head:", paste("<b>", "£", prettyNum(ukcountries$GVA.per.Head...England, big.mark=",", scientific=FALSE), "</b>")), popupOptions = popupOptions(closeOnClick=TRUE)) %>%
+                  addResetMapButton() %>%
+                  addLegend("bottomright", pal = pal1, values = ukcountries$Unemployment.Rate.England,
+                  title = "Unemployment Rate",
+                  opacity = 0.7) %>%
+                  setView(-3.3, 54.6, zoom = 6)
   })
   
   output$regionmap <- renderLeaflet({
@@ -322,13 +336,12 @@ server <- function(input, output, session) {
                                 "Median Hourly Wage - Retail:", paste("<b>", "£", ukregions$Median.Hourly.Wage...Retail, "</b>"), "<br>",
                                 "Average House Price:", paste("<b>", "£", prettyNum(ukregions$House.Price.Average...North.East, big.mark = ",", scientific=FALSE), "</b>"), "<br>",
                                 "GVA (Index):", paste("<b>", ukregions$GVA...North.East, "</b>"), "<br>",
-                                "GVA per head:", paste("<b>", "£", prettyNum(ukregions$GVA.per.Head...North.East, big.mark=",", scientific=FALSE), "</b>"))
-                  ) #%>%
-                  #addProviderTiles(providers$Esri.WorldStreetMap)
-                  #popup = paste("Constituency:", uk$Area, "<br>", "In Poverty:", prettyNum(uk$PovertyNumberActual, big.mark=",", scientific=FALSE), "<br>")) %>%
-                  #addLegend("bottomright", pal = pal2, values = data$Unemployment.Rate.North.East)
-                  #title = "In Poverty",
-                  #opacity = 1)
+                                "GVA per head:", paste("<b>", "£", prettyNum(ukregions$GVA.per.Head...North.East, big.mark=",", scientific=FALSE), "</b>")), popupOptions = popupOptions(closeOnClick=TRUE)) %>%
+                  addResetMapButton() %>%
+                  addLegend("bottomright", pal = pal2, values = ukregions$Unemployment.Rate.North.East,
+                  title = "Unemployment Rate",
+                  opacity = 0.7) %>%
+                  setView(-3.3, 54.6, zoom = 6)
         })
   
   datasetInput1 <- reactive({
@@ -376,9 +389,20 @@ server <- function(input, output, session) {
     contentType = "csv"
   )
   
+  output$timelineGroups <- renderTimevis({
+    timevis(data = timevisData, groups = timevisDataGroups, showZoom = TRUE, fit = FALSE)
+  })
+  
+  observeEvent(input$btn, {
+    centerTime("timelineGroups", Sys.Date() - 1)
+  })
+  
+#When running the app in a browser, this code automatically stops the app running in Rstudio when you close the tab.
+  session$onSessionEnded(stopApp)
+  
 }
 
-  
+
 #### Run Shiny ####
 
 shinyApp(ui, server)
