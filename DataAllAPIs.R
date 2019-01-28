@@ -1652,7 +1652,7 @@ colnames(GVANI) <- "GVA - Northern Ireland"
 rsi_vol <- pdfetch_ONS(c("J5EB","J45U", "IDOB","IDOC","IDOA","IDOG","IDOH","IDOH","IDOD","JO4C","J5DK"), "DRSI")
 #rsi_vol <- to.monthly(rsi_vol, OHLC=FALSE)
 
-colnames(rsi_vol) <- c("RSI Volumes - All retailing including automotive fuel", "RSI Volumes - All retailing excluding automotive fuel", "RSI Volumes - Predominantly food stores", "RSI Volumes - Predominantly non-food stores", "RSI Volumes - Non-Specialised stores", "RSI Volumes - Textile, clothing and footwear stores", "RSI Volumes - Households goods stores", "RSI Volumes - Other Non-Food Stores", "RSI Volumes - Non-Store retailing", "RSI Volumes - Fuel")
+colnames(rsi_vol) <- c("RSI Volumes - All retail inc auto fuel", "RSI Volumes - All retail exc auto fuel", "RSI Volumes - Predom food stores", "RSI Volumes - Predom non-food stores", "RSI Volumes - Non-Specialised stores", "RSI Volumes - Textile, clothing and footwear stores", "RSI Volumes - Households goods stores", "RSI Volumes - Other Non-Food Stores", "RSI Volumes - Non-Store retail", "RSI Volumes - Fuel")
 
 # Retail sales volume weights (2017)
 
@@ -1703,24 +1703,24 @@ W_J45U = 90.23
 rsi_val <- pdfetch_ONS(c("J59v","J3L2","J3L3","J3L4","EAIA","EAIB","EAIN","EAIC","EAIC","EAID","EAIF","J58L","IYP9","EAIT","EAIU","EAIV","EAIW","J58M","j58N","KP3T"), "DRSI")
 # rsi_val <- to.monthly(rsi_val, OHLC=FALSE)
 
-colnames(rsi_val) <- c("RSI Values - All retailing including automotive fuel",
-                       "RSI Values - All retailing excluding automotive fuel",
-                       "RSI Values - All retailing excluding automotive fuel: Large Businesses",
-                       "RSI Values - All retailing excluding automotive fuel: Small Businesses",
-                       "RSI Values - Predominantly food stores",
-                       "RSI Values - Total predominantly non-food stores",
+colnames(rsi_val) <- c("RSI Values - All retail inc auto fuel",
+                       "RSI Values - All retail exc auto fuel",
+                       "RSI Values - All retail exc auto fuel: Large Businesses",
+                       "RSI Values - All retail exc auto fuel: Small Businesses",
+                       "RSI Values - Predom food stores",
+                       "RSI Values - Predom non-food stores",
                        "RSI Values - Non-Specialised stores",
                        "RSI Values - Textile, clothing and footwear stores",
                        "RSI Values - Households goods stores",
                        "RSI Values - Other Non - Food Stores",
-                       "RSI Values - Non-Store retailing",
+                       "RSI Values - Non-Store retail",
                        "RSI Values - Fuel",
                        "RSI Values - Food Stores: Large Businesses",
                        "RSI Values - Food Stores: Small Businesses",
-                       "RSI Values - Total Predominantly Non-Food Stores: Large Businesses",
-                       "RSI Values - Total Predominantly Non-Food Stores: Small Businesses",
-                       "RSI Values - Non-Store retailing: Large Businesses",
-                       "RSI Values - Non-Store retailing: Small Businesses",
+                       "RSI Values - Predom Non-Food Stores: Large Businesses",
+                       "RSI Values - Predom Non-Food Stores: Small Businesses",
+                       "RSI Values - Non-Store retail: Large Businesses",
+                       "RSI Values - Non-Store retail: Small Businesses",
                        "RSI Values - Internet")
 
 # Value weights
@@ -2068,23 +2068,23 @@ nidata <- merge(to.yearly(unemp$`Unemployment Rate Northern Ireland`, OHLC = FAL
 nidata <- data.frame(date=index(nidata), coredata(nidata))
   
 # Create region data for download button (map tab)
-nedata <- merge(to.yearly(unemp$`Unemployment Rate North East`, OHLC = FALSE), to.yearly(employ$`Employment Total North East`, OHLC = FALSE), GVANE$`GVA - North East`, GVAperheadNE$`GVA per Head - North East`, all = TRUE, fill = NA)
+nedata <- merge(to.yearly(unemp$`Unemployment Rate North East`, OHLC = FALSE), to.yearly(employ$`Employment Total North East`, OHLC = FALSE), GVANE$`GVA - North East`, GVAperheadNE$`GVA per Head - North East`, ashe_regionxts$`North East Total Median_OBS_VALUE`, ashe_regionxts$`North East Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 nedata <- data.frame(date=index(nedata), coredata(nedata))
-nwdata <- merge(to.yearly(unemp$`Unemployment Rate North West`, OHLC = FALSE), to.yearly(employ$`Employment Total North West`, OHLC = FALSE), GVANW$`GVA - North West`, GVAperheadNW$`GVA per Head - North West`, all = TRUE, fill = NA)
+nwdata <- merge(to.yearly(unemp$`Unemployment Rate North West`, OHLC = FALSE), to.yearly(employ$`Employment Total North West`, OHLC = FALSE), GVANW$`GVA - North West`, GVAperheadNW$`GVA per Head - North West`, ashe_regionxts$`North West Total Median_OBS_VALUE`, ashe_regionxts$`North West Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 nwdata <- data.frame(date=index(nwdata), coredata(nwdata))
-yorkdata <- merge(to.yearly(unemp$`Unemployment Rate Yorkshire & the Humber`, OHLC = FALSE), to.yearly(employ$`Employment Total Yorkshire & the Humber`, OHLC = FALSE), GVAyork$`GVA - Yorkshire & The Humber`, GVAperheadyork$`GVA per Head - Yorkshire & The Humber`, all = TRUE, fill = NA)
+yorkdata <- merge(to.yearly(unemp$`Unemployment Rate Yorkshire & the Humber`, OHLC = FALSE), to.yearly(employ$`Employment Total Yorkshire & the Humber`, OHLC = FALSE), GVAyork$`GVA - Yorkshire & The Humber`, GVAperheadyork$`GVA per Head - Yorkshire & The Humber`, ashe_regionxts$`Yorkshire and The Humber Total Median_OBS_VALUE`, ashe_regionxts$`Yorkshire and The Humber Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 yorkdata <- data.frame(date=index(yorkdata), coredata(yorkdata))
-emdata <- merge(to.yearly(unemp$`Unemployment Rate East Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total East Midlands`, OHLC = FALSE), GVAEM$`GVA - East Midlands`, GVAperheadEM$`GVA per Head - East Midlands`, all = TRUE, fill = NA)
+emdata <- merge(to.yearly(unemp$`Unemployment Rate East Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total East Midlands`, OHLC = FALSE), GVAEM$`GVA - East Midlands`, GVAperheadEM$`GVA per Head - East Midlands`, ashe_regionxts$`East Midlands Total Median_OBS_VALUE`, ashe_regionxts$`East Midlands Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 emdata <- data.frame(date=index(emdata), coredata(emdata))
-wmdata <- merge(to.yearly(unemp$`Unemployment Rate West Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total West Midlands`, OHLC = FALSE), GVAWM$`GVA - West Midlands`, GVAperheadWM$`GVA per Head - West Midlands`, all = TRUE, fill = NA)
+wmdata <- merge(to.yearly(unemp$`Unemployment Rate West Midlands`, OHLC = FALSE), to.yearly(employ$`Employment Total West Midlands`, OHLC = FALSE), GVAWM$`GVA - West Midlands`, GVAperheadWM$`GVA per Head - West Midlands`, ashe_regionxts$`West Midlands Total Median_OBS_VALUE`, ashe_regionxts$`West Midlands Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 wmdata <- data.frame(date=index(wmdata), coredata(wmdata))
-edata <- merge(to.yearly(unemp$`Unemployment Rate East`, OHLC = FALSE), to.yearly(employ$`Employment Total East`, OHLC = FALSE), GVAE$`GVA - East`, GVAperheadE$`GVA per Head - East`, all = TRUE, fill = NA)
+edata <- merge(to.yearly(unemp$`Unemployment Rate East`, OHLC = FALSE), to.yearly(employ$`Employment Total East`, OHLC = FALSE), GVAE$`GVA - East`, GVAperheadE$`GVA per Head - East`, ashe_regionxts$`East Total Median_OBS_VALUE`, ashe_regionxts$`East Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 edata <- data.frame(date=index(edata), coredata(edata))
-londondata <- merge(to.yearly(unemp$`Unemployment Rate London`, OHLC = FALSE), to.yearly(employ$`Employment Total London`, OHLC = FALSE), GVALondon$`GVA - London`, GVAperheadLondon$`GVA per Head - London`, all = TRUE, fill = NA)
+londondata <- merge(to.yearly(unemp$`Unemployment Rate London`, OHLC = FALSE), to.yearly(employ$`Employment Total London`, OHLC = FALSE), GVALondon$`GVA - London`, GVAperheadLondon$`GVA per Head - London`, ashe_regionxts$`London Total Median_OBS_VALUE`, ashe_regionxts$`London Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 londondata <- data.frame(date=index(londondata), coredata(londondata))
-sedata <- merge(to.yearly(unemp$`Unemployment Rate South East`, OHLC = FALSE), to.yearly(employ$`Employment Total South East`, OHLC = FALSE), GVASE$`GVA - South East`, GVAperheadSE$`GVA per Head - South East`, all = TRUE, fill = NA)
+sedata <- merge(to.yearly(unemp$`Unemployment Rate South East`, OHLC = FALSE), to.yearly(employ$`Employment Total South East`, OHLC = FALSE), GVASE$`GVA - South East`, GVAperheadSE$`GVA per Head - South East`, ashe_regionxts$`South East Total Median_OBS_VALUE`, ashe_regionxts$`South East Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 sedata <- data.frame(date=index(sedata), coredata(sedata))
-swdata <- merge(to.yearly(unemp$`Unemployment Rate South West`, OHLC = FALSE), to.yearly(employ$`Employment Total South West`, OHLC = FALSE), GVASW$`GVA - South West`, GVAperheadSW$`GVA per Head - South West`, all = TRUE, fill = NA)
+swdata <- merge(to.yearly(unemp$`Unemployment Rate South West`, OHLC = FALSE), to.yearly(employ$`Employment Total South West`, OHLC = FALSE), GVASW$`GVA - South West`, GVAperheadSW$`GVA per Head - South West`, ashe_regionxts$`South West Total Median_OBS_VALUE`, ashe_regionxts$`South West Total Annual percentage change - median_OBS_VALUE`, all = TRUE, fill = NA)
 swdata <- data.frame(date=index(swdata), coredata(swdata))
 
 #### RI&A monitor release calendar ####
@@ -2128,13 +2128,10 @@ timevisData <- data.frame(
             1,2,3,4,5,6,7,8,
             1,2,3,4,5,8,
             1,2,3,4,5,8,
-            1,2,3,4,5,6,7
-            
+            1,2,3,4,5,6,7)
   )
-)
 
 timevisDataGroups <- data.frame(
   id = 1:8,
-  
   content = c("BRC-Nielsen Shop Price Index", "BRC-KPMG Retail Sales Monitor", "BRC-Hitwise Digital Retail Insight", "BRC-Springboard Footfall & Vacancies", "SRC-KPMG Scottish Retail Sales Monitor", "BRC Quarterly Trends Analysis", "BRC Retail Employment Monitor", "BRC Economic Briefing Report")
   )

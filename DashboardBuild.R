@@ -19,8 +19,8 @@ BRCcol <- c("#92278F", "#00BBCE", "#262262", "#E6E7E8")
 #### Shiny UI ####
 
 ui <- dashboardPage(skin = "blue",
-                 dashboardHeader(title = "Retail Data"),
-                 dashboardSidebar(
+                 dashboardHeader(title = "BRC DATA DASHBOARD", titleWidth = 300),
+                 dashboardSidebar(width = 300,
                    sidebarMenu(id = "sidebarmenu",
                      menuItem("BRC Data Snapshot", icon = icon("th"), tabName = "brcstats"),
                      menuItem("External Data Snapshot", icon = icon("th"), tabName = "extstats"),
@@ -54,8 +54,12 @@ ui <- dashboardPage(skin = "blue",
                      
                      )),
                  
-                 dashboardBody(      
-                        
+                 dashboardBody(  
+                   #This code links the styling of the app to the .css stylesheet saved in the 'www' folder.
+                   tags$head(
+                     tags$link(rel = "stylesheet", type = "text/css", 
+                               href = "style.css")
+                   ),    
                     tabItems(
                           
                       tabItem(tabName = "brcstats",
@@ -90,28 +94,28 @@ ui <- dashboardPage(skin = "blue",
                         h3("External Data Snapshot"),
                                     
                         fluidRow(
-                          valueBox(subtitle = "RSI Overall (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - All retailing excluding automotive fuel`, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = "RSI Food (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - Predominantly food stores`, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = "RSI Online (NSA) (YoY Change)", value = paste0(round(tail(rsi_val$`RSI Values - Internet`, 1), 1),"%"), color = "red")),
+                          valueBox(subtitle = paste("RSI Overall (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1), 1),"%"), color = "red"),
+                          valueBox(subtitle = paste("RSI Food (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Predom food stores`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Predom food stores`, 1), 1),"%"), color = "red"),
+                          valueBox(subtitle = paste("RSI Online (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Internet`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Internet`, 1), 1),"%"), color = "red")),
                         
                         fluidRow(
-                          valueBox(subtitle = "CPI All Items (YoY Change)", value = paste0(tail(cpi_all, 1), "%"), color = "yellow"),
-                          valueBox(subtitle = "CPI Food (YoY Change)", value = paste0(round(tail(cpi_food, 1), 1), "%"), color = "yellow"),
-                          valueBox(subtitle = "CPI Non-Food (YoY Change)", value = paste0(round(tail(cpi_nonfood, 1), 1), "%"), color = "yellow")),
+                          valueBox(subtitle = paste("CPI All Items (YoY Change)","  ", format(index(tail(cpi_all, 1)), "%Y %B")), value = paste0(tail(cpi_all, 1), "%"), color = "yellow"),
+                          valueBox(subtitle = paste("CPI Food (YoY Change)","  ", format(index(tail(cpi_food, 1)), "%Y %B")), value = paste0(round(tail(cpi_food, 1), 1), "%"), color = "yellow"),
+                          valueBox(subtitle = paste("CPI Non-Food (YoY Change)","  ", format(index(tail(cpi_nonfood, 1)), "%Y %B")), value = paste0(round(tail(cpi_nonfood, 1), 1), "%"), color = "yellow")),
                         
                         fluidRow(
-                          valueBox(subtitle = "GVA Whole Economy (YoY Change)", value = paste0(tail(GVAmonthly_yoy), "%"), color = "green"),
-                          valueBox(subtitle = "GVA Whole Economy Quarterly (£m)", value = paste0("£", prettyNum(tail(gva_all, 1), big.mark = ",", scientific=FALSE)), color = "green"),
-                          valueBox(subtitle = "GVA Retail Quarterly (£m)", value = paste0("£", prettyNum(tail(gva_retail, 1), big.mark = ",", scientific=FALSE)), color = "green")),
+                          valueBox(subtitle = paste("GVA Whole Economy (YoY Change)","  ", format(index(tail(GVAmonthly_yoy, 1)), "%Y %B")), value = paste0(tail(GVAmonthly_yoy), "%"), color = "green"),
+                          valueBox(subtitle = paste("GVA Whole Economy Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_all, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_all, 1), big.mark = ",", scientific=FALSE)), color = "green"),
+                          valueBox(subtitle = paste("GVA Retail Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_retail, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_retail, 1), big.mark = ",", scientific=FALSE)), color = "green")),
                         
                         fluidRow(
-                          valueBox(subtitle = "Unempoyment Rate", value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua"),
-                          valueBox(subtitle = "Jobs Whole Economy (000's)", value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua"),
-                          valueBox(subtitle = "Jobs Retail (000's)", value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua")),
+                          valueBox(subtitle = paste("Unempoyment Rate","  ", format(index(tail(unemp$`Unemployment Rate UK`, 1)), "%Y %B")), value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua"),
+                          valueBox(subtitle = paste("Jobs Whole Economy (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_all, 1)), format = "%d-%m-%Y")), value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua"),
+                          valueBox(subtitle = paste("Jobs Retail (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_retail, 1)), format = "%Y-%m-%d")), value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua")),
                         
                         fluidRow(
-                          valueBox(subtitle = "Average Weekly Earnings - Regular Pay (YoY Change)", value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue"),
-                          valueBox(subtitle = "Average Weekly Earnings - Real Regular Pay (YoY Change)", value = paste0(tail(awe$`Real Regular Pay YoY Growth`, 1), "%"), color = "blue"))),
+                          valueBox(subtitle = paste("Average Weekly Earnings - Regular Pay (YoY Change)","  ", format(index(tail(awe$`Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue"),
+                          valueBox(subtitle = paste("Average Weekly Earnings - Real Regular Pay (YoY Change)","  ", format(index(tail(awe$`Real Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Real Regular Pay YoY Growth`, 1), "%"), color = "blue"))),
                         
                         
                       tabItem(tabName = "dygraph",
