@@ -4,6 +4,7 @@
 
   library(ggplot2)
   library(reshape2)
+  library(gridExtra)
 
 #calculate contributions to growth (ex-fuel vol sales)
   rsi_vol$C_IDOB = rsi_vol$IDOB*W_IDOB/W_J45U
@@ -82,8 +83,7 @@ p1=  ggplot(plot_data_long, aes(x=index.plot_data.,y=values,fill=ind))+
     labs(x="month",y="Contribution to year on year growth",title = "Contributions to retail sales value growth (ONS RSI)")+
     geom_text(aes(label=round(values,digits=1)),size = 3, position =  "stack",vjust = 1.5)
   
-  
-  #plot small v large, food, non-food, online
+  #plot small v large
   plot_data4=rsi_val["2016-01/",c("C_EAIT","C_EAIU","C_EAIV","C_EAIW","C_J58M","C_J58N")]
   plot_data4_long=data.frame(index(plot_data4),stack(as.data.frame(coredata(plot_data4))))
   
@@ -122,8 +122,8 @@ p1=  ggplot(plot_data_long, aes(x=index.plot_data.,y=values,fill=ind))+
   
   
   #RSM contributions
-  RSM_xts$C_rsm_food=RSM_xts$rsm_food*W_rsm_food/100
-  RSM_xts$C_rsm_nffood=RSM_xts$rsm_nffood*W_rsm_nffood/100
+  RSM_xts$C_rsm_food=RSM_xts$Food.Sales....yoy.change.*W_rsm_food/100
+  RSM_xts$C_rsm_nffood=RSM_xts$Non.Food.Sales....yoy.change. *W_rsm_nffood/100
 
   plot_data6=RSM_xts["2016-01/",c("C_rsm_food","C_rsm_nffood")]
   
@@ -139,6 +139,6 @@ p6=  ggplot(plot_data6_long, aes(x=index.plot_data6.,y=values,fill=ind))+
     labs(x="month",y="Contribution to year on year growth",title = "Contributions to retail sales value growth (RSM)")+
     geom_text(aes(label=round(values,digits=1)),size = 3, position =  "stack",vjust = 1.5)
   
-grid.arrange(p1, p2,p3,p4,p5,p6, nrow = 3)
+grid.arrange(p4,p6, nrow = 2)
 
   

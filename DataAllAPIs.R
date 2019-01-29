@@ -9,7 +9,7 @@ library(httr)
 library(SPARQL)
 library(utils)
 
-setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+#setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
 
 #### Bank of England Time Series Creation ####
 
@@ -979,13 +979,13 @@ source("DRIData.R")
 
 #,"XLConnect","rJava", "ReporteRs"
 #enter last date you wish to upload for
-endate= ISOdate(2018,06,1)
+endate= ISOdate(2018,12,1)
 
 #add bespoke endates for monitors particularly when data have been entered into workbooks but not published
 #must be a date after 2017,11,01
-endateRSM=ISOdate(2018,06,1)
-endateFF=ISOdate(2018,06,1)
-endateDRI=ISOdate(2018,06,1)
+endateRSM=ISOdate(2018,12,1)
+endateFF=ISOdate(2018,12,1)
+endateDRI=ISOdate(2018,12,1)
 
 adddate=length(seq(from=ISOdate(2017,11,1), to=endate, by="months"))-1 
 adddateRSM=length(seq(from=ISOdate(2017,11,1), to=endateRSM, by="months"))-1
@@ -1101,7 +1101,7 @@ names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboar
 
 #### ONS Consumer Price Inflation Annual Data (MM23) - Definitions ####
 
-setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
+#setwd("C:/Users/James.Hardiman/Documents/DatabaseBuild")
 
 # "D7G7" = All Items
 
