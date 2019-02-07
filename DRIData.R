@@ -4,18 +4,14 @@
 
 
 ##set working directory
-#setwd("Z:/Projects/RDataAggregation")
+
 
 ###identify location of Java file (only needed for running XLconnect)
 Sys.setenv(JAVA_HOME='C:\\Program Files (x86)\\Java\\jre1.8.0_91') 
 # for 32-bit version
 
 
-### list packages to load
-packages=c("reshape2","devtools","readxl","gdata","dplyr","DataCombine","ggplot2","extrafont","openxlsx","lubridate","gridExtra","grid","TTR")
 
-###load packages(only needed for running XLconnect)
-lapply(packages,require,character.only=TRUE)
 
 ###set Java parameters 
 #options(java.parameters = "-Xmx4g")
@@ -37,7 +33,7 @@ files_3=c("brc_20151003_5w.xls", "brc_20151031_4w.xls", "brc_20151128_4w.xls","b
 for(j in files_1){
 
 url_hit=paste("https://brc:pah9Hu1u@feeds.hitwise.com/user162/",j,sep="")
-loc.hit=paste("C:/Users/James.Hardiman/Documents/DatabaseBuild/",j,sep="")
+loc.hit=paste(j)
 download.file(url_hit,loc.hit,mode="wb")
 
 #
@@ -164,7 +160,7 @@ for (k in 1:10){
 for(j in files_2){
   
   url_hit=paste("https://brc:pah9Hu1u@feeds.hitwise.com/user162/",j,sep="")
-  loc.hit=paste("C:/Users/James.Hardiman/Documents/DatabaseBuild/",j,sep="")
+  loc.hit=paste(j)
   download.file(url_hit,loc.hit,mode="wb")
   
   #}
@@ -285,7 +281,7 @@ for(j in files_2){
 for(j in files_3){
   
   url_hit=paste("https://brc:pah9Hu1u@feeds.hitwise.com/user162/",j,sep="")
-  loc.hit=paste("C:/Users/James.Hardiman/Documents/DatabaseBuild/",j,sep="")
+  loc.hit=paste(j)
   download.file(url_hit,loc.hit,mode="wb")
 
   #}
@@ -582,6 +578,6 @@ DRI_old=DRI[which(DRI$Date<as.Date("2015-12-01")),]
 require(plyr)
 DRI_Master=rbind.fill(DRI_old,DRI_new)
 
-write.csv(DRI_Master,"Z:/Projects/RDataAggregation/DRI Master.csv")
+write.csv(DRI_Master,"DRI Master.csv")
 
 
