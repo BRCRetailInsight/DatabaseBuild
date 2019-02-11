@@ -78,7 +78,7 @@ url <- "https://www.ons.gov.uk/file?uri=/economy/grossdomesticproductgdp/dataset
 loc.download <- "gva_all.xls"
 download.file(url,loc.download,mode = "wb")
 gva_all <- "gva_all.xls"
-gva_all <- read_excel(gva_all, sheet = 3, range = "D46:D132")
+gva_all <- read_excel(gva_all, sheet = 3, range = cell_limits(c(46, 4), c(NA, 4)))
 
 dates <- seq(as.Date("1997-03-20"), length = nrow(gva_all), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -87,7 +87,7 @@ colnames(GVAquarterly_all) <- "GVA Quarterly - Whole Economy (£m)"
 
 #GVA Retail (CP £m)
 gva_retail <- "gva_all.xls"
-gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
+gva_retail <- read_excel(gva_retail, sheet = 3, range = cell_limits(c(46, 103), c(NA, 103)))
 GVAquarterly_retail <- xts(x = gva_retail, order.by=dates)
 colnames(GVAquarterly_retail) <- "GVA Quarterly - Retail (£m)"
 
@@ -124,14 +124,15 @@ url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/
 loc.download <- "empjobs.xls"
 download.file(url,loc.download,mode = "wb")
 empjobs <- "empjobs.xls"
-empjobs_all <- read_excel(empjobs, sheet = 2, range = "CH6:CH167")
+empjobs_all <- read_excel(empjobs, sheet = 2, range = cell_limits(c(6, 86), c(NA, 86)))
+empjobs_all <- head(empjobs_all, -2)
 
 dates <- seq(as.Date("1978-06-20"), length = nrow(empjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
 empjobsquarterly_all <- xts(x = empjobs_all, order.by=dates)
 colnames(empjobsquarterly_all) <- "Employee Jobs - Whole Economy"
 
-empjobs_retail <- read_excel(empjobs, sheet = 2, range = "AO6:AO167")
+empjobs_retail <- read_excel(empjobs, sheet = 2, range = cell_limits(c(6, 41), c(NA, 41)))
 empjobsquarterly_retail <- xts(x = empjobs_retail, order.by=dates)
 colnames(empjobsquarterly_retail) <- "Employee Jobs - Retail"
 
@@ -140,14 +141,15 @@ url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/
 loc.download <- "selfjobs.xls"
 download.file(url,loc.download,mode = "wb")
 selfjobs <- "selfjobs.xls"
-selfjobs_all <- read_excel(selfjobs, sheet = 2, range = "CH6:CH96")
+selfjobs_all <- read_excel(selfjobs, sheet = 2, range = cell_limits(c(6, 86), c(NA, 86)))
+selfjobs_all <- head(selfjobs_all, -2)
 
 dates <- seq(as.Date("1996-03-20"), length = nrow(selfjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
 selfjobsquarterly_all <- xts(x = selfjobs_all, order.by=dates)
 colnames(selfjobsquarterly_all) <- "Self-Employed Jobs - Whole Economy"
 
-selfjobs_retail <- read_excel(selfjobs, sheet = 2, range = "AO6:AO96")
+selfjobs_retail <- read_excel(selfjobs, sheet = 2, range = cell_limits(c(6, 41), c(NA, 41)))
 selfjobsquarterly_retail <- xts(x = selfjobs_retail, order.by=dates)
 colnames(selfjobsquarterly_retail) <- "Self-Employed Jobs - Retail"
 
@@ -396,7 +398,7 @@ AsheFemalePartRetail <- read_excel("PROV - SIC07 Industry (2) SIC2007 Table 4.6a
 url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/earningsandworkinghours/datasets/regionbyindustry2digitsicashetable5/2018provisional/table52018provisional.zip"
 loc.download <- "ashe5.zip"
 download.file(url,loc.download,mode = "wb")
-ashe4 <- "ashe5.zip"
+ashe5 <- "ashe5.zip"
 unzip("ashe5.zip")
 
 #All
@@ -1562,7 +1564,7 @@ url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/
 loc.download <- "output_all.xls"
 download.file(url,loc.download,mode = "wb")
 outputperhour <- "output_all.xls"
-output_all <- read_excel(outputperhour, sheet = 6, range = "B7:B93")
+output_all <- read_excel(outputperhour, sheet = 6, range = cell_limits(c(7, 2), c(NA, 2)))
 
 dates <- seq(as.Date("1997-03-20"), length = nrow(output_all), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -1574,7 +1576,7 @@ url <- "https://www.ons.gov.uk/file?uri=/economy/economicoutputandproductivity/p
 loc.download <- "output_retail.xls"
 download.file(url,loc.download,mode = "wb")
 outputperhour_retail <- "output_retail.xls"
-output_retail <- read_excel(outputperhour_retail, sheet = 3, range = "Y7:Y93")
+output_retail <- read_excel(outputperhour_retail, sheet = 3, range = cell_limits(c(7, 25), c(NA, 25)))
 
 dates <- seq(as.Date("1997-03-20"), length = nrow(output_retail), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -1593,85 +1595,85 @@ dates <- seq(as.Date("1998-12-31"), length = 20, by = "years")
 dates <- LastDayInMonth(dates)
 
 #UK
-GVAperheaduk <- read_excel(gva_per_head_all, sheet = 5, range = "D3:W3", col_names = FALSE)
+GVAperheaduk <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(3, 4), c(3, NA)), col_names = FALSE)
 GVAperheaduk <- t(GVAperheaduk)
 GVAperheaduk <- xts(x = GVAperheaduk, order.by=dates)
 colnames(GVAperheaduk) <- "GVA per Head - UK"
 
 #England
-GVAperheadengland <- read_excel(gva_per_head_all, sheet = 5, range = "D4:W4", col_names = FALSE)
+GVAperheadengland <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(4, 4), c(4, NA)), col_names = FALSE)
 GVAperheadengland <- t(GVAperheadengland)
 GVAperheadengland <- xts(x = GVAperheadengland, order.by=dates)
 colnames(GVAperheadengland) <- "GVA per Head - England"
 
 #North East
-GVAperheadNE <- read_excel(gva_per_head_all, sheet = 5, range = "D5:W5", col_names = FALSE)
+GVAperheadNE <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(5, 4), c(5, NA)), col_names = FALSE)
 GVAperheadNE <- t(GVAperheadNE)
 GVAperheadNE <- xts(x = GVAperheadNE, order.by=dates)
 colnames(GVAperheadNE) <- "GVA per Head - North East"
 
 #North West
-GVAperheadNW <- read_excel(gva_per_head_all, sheet = 5, range = "D15:W15", col_names = FALSE)
+GVAperheadNW <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(15, 4), c(15, NA)), col_names = FALSE)
 GVAperheadNW <- t(GVAperheadNW)
 GVAperheadNW <- xts(x = GVAperheadNW, order.by=dates)
 colnames(GVAperheadNW) <- "GVA per Head - North West"
 
 #North Yorkshire & the Humber
-GVAperheadyork <- read_excel(gva_per_head_all, sheet = 5, range = "D41:W41", col_names = FALSE)
+GVAperheadyork <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(41, 4), c(41, NA)), col_names = FALSE)
 GVAperheadyork <- t(GVAperheadyork)
 GVAperheadyork <- xts(x = GVAperheadyork, order.by=dates)
 colnames(GVAperheadyork) <- "GVA per Head - Yorkshire & The Humber"
 
 #East Midlands
-GVAperheadEM <- read_excel(gva_per_head_all, sheet = 5, range = "D57:W57", col_names = FALSE)
+GVAperheadEM <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(57, 4), c(57, NA)), col_names = FALSE)
 GVAperheadEM <- t(GVAperheadEM)
 GVAperheadEM <- xts(x = GVAperheadEM, order.by=dates)
 colnames(GVAperheadEM) <- "GVA per Head - East Midlands"
 
 #West Midlands
-GVAperheadWM <- read_excel(gva_per_head_all, sheet = 5, range = "D72:W72", col_names = FALSE)
+GVAperheadWM <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(72, 4), c(72, NA)), col_names = FALSE)
 GVAperheadWM <- t(GVAperheadWM)
 GVAperheadWM <- xts(x = GVAperheadWM, order.by=dates)
 colnames(GVAperheadWM) <- "GVA per Head - West Midlands"
 
 #East
-GVAperheadE <- read_excel(gva_per_head_all, sheet = 5, range = "D90:W90", col_names = FALSE)
+GVAperheadE <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(90, 4), c(90, NA)), col_names = FALSE)
 GVAperheadE <- t(GVAperheadE)
 GVAperheadE <- xts(x = GVAperheadE, order.by=dates)
 colnames(GVAperheadE) <- "GVA per Head - East"
 
 #London
-GVAperheadLondon <- read_excel(gva_per_head_all, sheet = 5, range = "D110:W110", col_names = FALSE)
+GVAperheadLondon <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(110, 4), c(110, NA)), col_names = FALSE)
 GVAperheadLondon <- t(GVAperheadLondon)
 GVAperheadLondon <- xts(x = GVAperheadLondon, order.by=dates)
 colnames(GVAperheadLondon) <- "GVA per Head - London"
 
 #South East
-GVAperheadSE <- read_excel(gva_per_head_all, sheet = 5, range = "D137:W137", col_names = FALSE)
+GVAperheadSE <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(137, 4), c(137, NA)), col_names = FALSE)
 GVAperheadSE <- t(GVAperheadSE)
 GVAperheadSE <- xts(x = GVAperheadSE, order.by=dates)
 colnames(GVAperheadSE) <- "GVA per Head - South East"
 
 #South West
-GVAperheadSW <- read_excel(gva_per_head_all, sheet = 5, range = "D163:W163", col_names = FALSE)
+GVAperheadSW <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(163, 4), c(163, NA)), col_names = FALSE)
 GVAperheadSW <- t(GVAperheadSW)
 GVAperheadSW <- xts(x = GVAperheadSW, order.by=dates)
 colnames(GVAperheadSW) <- "GVA per Head - South West"
 
 #Wales
-GVAperheadwales <- read_excel(gva_per_head_all, sheet = 5, range = "D180:W180", col_names = FALSE)
+GVAperheadwales <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(180, 4), c(180, NA)), col_names = FALSE)
 GVAperheadwales <- t(GVAperheadwales)
 GVAperheadwales <- xts(x = GVAperheadwales, order.by=dates)
 colnames(GVAperheadwales) <- "GVA per Head - Wales"
 
 #Scotland
-GVAperheadscot <- read_excel(gva_per_head_all, sheet = 5, range = "D195:W195", col_names = FALSE)
+GVAperheadscot <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(195, 4), c(195, NA)), col_names = FALSE)
 GVAperheadscot <- t(GVAperheadscot)
 GVAperheadscot <- xts(x = GVAperheadscot, order.by=dates)
 colnames(GVAperheadscot) <- "GVA per Head - Scotland"
 
 #Northern Ireland
-GVAperheadNI <- read_excel(gva_per_head_all, sheet = 5, range = "D224:W224", col_names = FALSE)
+GVAperheadNI <- read_excel(gva_per_head_all, sheet = 5, range = cell_limits(c(224, 4), c(224, NA)), col_names = FALSE)
 GVAperheadNI <- t(GVAperheadNI)
 GVAperheadNI <- xts(x = GVAperheadNI, order.by=dates)
 colnames(GVAperheadNI) <- "GVA per Head - Northern Ireland"
@@ -1686,85 +1688,85 @@ dates <- seq(as.Date("1998-12-31"), length = 20, by = "years")
 dates <- LastDayInMonth(dates)
 
 #UK
-GVAuk <- read_excel(gva_region, sheet = 3, range = "E58:X58", col_names = FALSE)
+GVAuk <- read_excel(gva_region, sheet = 3, range = cell_limits(c(58, 5), c(58, NA)), col_names = FALSE)
 GVAuk <- t(GVAuk)
 GVAuk <- xts(x = GVAuk, order.by=dates)
 colnames(GVAuk) <- "GVA - UK"
 
 #England
-GVAengland <- read_excel(gva_region, sheet = 3, range = "E174:X174", col_names = FALSE)
+GVAengland <- read_excel(gva_region, sheet = 3, range = cell_limits(c(174, 5), c(174, NA)), col_names = FALSE)
 GVAengland <- t(GVAengland)
 GVAengland <- xts(x = GVAengland, order.by=dates)
 colnames(GVAengland) <- "GVA - England"
 
 #North East
-GVANE <- read_excel(gva_region, sheet = 3, range = "E290:X290", col_names = FALSE)
+GVANE <- read_excel(gva_region, sheet = 3, range = cell_limits(c(290, 5), c(290, NA)), col_names = FALSE)
 GVANE <- t(GVANE)
 GVANE <- xts(x = GVANE, order.by=dates)
 colnames(GVANE) <- "GVA - North East"
 
 #North West
-GVANW <- read_excel(gva_region, sheet = 3, range = "E406:X406", col_names = FALSE)
+GVANW <- read_excel(gva_region, sheet = 3, range = cell_limits(c(406, 5), c(406, NA)), col_names = FALSE)
 GVANW <- t(GVANW)
 GVANW <- xts(x = GVANW, order.by=dates)
 colnames(GVANW) <- "GVA - North West"
 
 #North Yorkshire & the Humber
-GVAyork <- read_excel(gva_region, sheet = 3, range = "E522:X522", col_names = FALSE)
+GVAyork <- read_excel(gva_region, sheet = 3, range = cell_limits(c(522, 5), c(522, NA)), col_names = FALSE)
 GVAyork <- t(GVAyork)
 GVAyork <- xts(x = GVAyork, order.by=dates)
 colnames(GVAyork) <- "GVA - Yorkshire & The Humber"
 
 #East Midlands
-GVAEM <- read_excel(gva_region, sheet = 3, range = "E638:X638", col_names = FALSE)
+GVAEM <- read_excel(gva_region, sheet = 3, range = cell_limits(c(638, 5), c(638, NA)), col_names = FALSE)
 GVAEM <- t(GVAEM)
 GVAEM <- xts(x = GVAEM, order.by=dates)
 colnames(GVAEM) <- "GVA - East Midlands"
 
 #West Midlands
-GVAWM <- read_excel(gva_region, sheet = 3, range = "E754:X754", col_names = FALSE)
+GVAWM <- read_excel(gva_region, sheet = 3, range = cell_limits(c(754, 5), c(754, NA)), col_names = FALSE)
 GVAWM <- t(GVAWM)
 GVAWM <- xts(x = GVAWM, order.by=dates)
 colnames(GVAWM) <- "GVA - West Midlands"
 
 #East
-GVAE <- read_excel(gva_region, sheet = 3, range = "E870:X870", col_names = FALSE)
+GVAE <- read_excel(gva_region, sheet = 3, range = cell_limits(c(870, 5), c(870, NA)), col_names = FALSE)
 GVAE <- t(GVAE)
 GVAE <- xts(x = GVAE, order.by=dates)
 colnames(GVAE) <- "GVA - East"
 
 #London
-GVALondon <- read_excel(gva_region, sheet = 3, range = "E986:X986", col_names = FALSE)
+GVALondon <- read_excel(gva_region, sheet = 3, range = cell_limits(c(986, 5), c(986, NA)), col_names = FALSE)
 GVALondon <- t(GVALondon)
 GVALondon <- xts(x = GVALondon, order.by=dates)
 colnames(GVALondon) <- "GVA - London"
 
 #South East
-GVASE <- read_excel(gva_region, sheet = 3, range = "E1102:X1102", col_names = FALSE)
+GVASE <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1102, 5), c(1102, NA)), col_names = FALSE)
 GVASE <- t(GVASE)
 GVASE <- xts(x = GVASE, order.by=dates)
 colnames(GVASE) <- "GVA - South East"
 
 #South West
-GVASW <- read_excel(gva_region, sheet = 3, range = "E1218:X1218", col_names = FALSE)
+GVASW <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1218, 5), c(1218, NA)), col_names = FALSE)
 GVASW <- t(GVASW)
 GVASW <- xts(x = GVASW, order.by=dates)
 colnames(GVASW) <- "GVA - South West"
 
 #Wales
-GVAwales <- read_excel(gva_region, sheet = 3, range = "E1334:X1334", col_names = FALSE)
+GVAwales <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1334, 5), c(1334, NA)), col_names = FALSE)
 GVAwales <- t(GVAwales)
 GVAwales <- xts(x = GVAwales, order.by=dates)
 colnames(GVAwales) <- "GVA - Wales"
 
 #Scotland
-GVAscot <- read_excel(gva_region, sheet = 3, range = "E1450:X1450", col_names = FALSE)
+GVAscot <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1450, 5), c(1450)), col_names = FALSE)
 GVAscot <- t(GVAscot)
 GVAscot <- xts(x = GVAscot, order.by=dates)
 colnames(GVAscot) <- "GVA - Scotland"
 
 #Northern Ireland
-GVANI <- read_excel(gva_region, sheet = 3, range = "E1566:X1566", col_names = FALSE)
+GVANI <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1566, 5), c(1566, NA)), col_names = FALSE)
 GVANI <- t(GVANI)
 GVANI <- xts(x = GVANI, order.by=dates)
 colnames(GVANI) <- "GVA - Northern Ireland"
@@ -1906,6 +1908,7 @@ W_J58N=11550
 
 
 #### DRI Data ####
+
 setwd("Z:/Projects/RDataAggregation/")
 source("DRIData.R")
 
@@ -1942,49 +1945,52 @@ DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]=DRI_Mast
 
 #### REM Data ####
 
-REM_emp = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e22:dt22",col_names = FALSE,col_types="numeric")*100))
-REM_FTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e24:dt24",col_names = FALSE,col_types="numeric")*100))
-REM_PTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e25:dt25",col_names = FALSE,col_types="numeric")*100))
-REM_hrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e28:dt28",col_names = FALSE,col_types="numeric")*100))
-REM_FThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e29:dt29",col_names = FALSE,col_types="numeric")*100))
-REM_PThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e30:dt30",col_names = FALSE,col_types="numeric")*100))
-REM_stores = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e20:dt20",col_names = FALSE,col_types="numeric")*100))
-REM_stores3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",range="'Headlines & Charts'!e21:dt21",col_names = FALSE,col_types="numeric")*100))
+REM_emp = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(22, 5), c(22, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_FTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(24, 5), c(24, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_PTemp3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(25, 5), c(25, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_hrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(28, 5), c(28, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_FThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(29, 5), c(29, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_PThrs = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(30, 5), c(30, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_stores = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(20, 5), c(20, NA)),col_names = FALSE,col_types="numeric")*100))
+REM_stores3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(21, 5), c(21, NA)),col_names = FALSE,col_types="numeric")*100))
+
+REM <- cbind(REM_emp, REM_FTemp3mth, REM_FThrs, REM_hrs, REM_PTemp3mth, REM_PThrs, REM_stores, REM_stores3mth)
+colnames(REM) <- c("REM - Employment", "REM - FT Employment 3-mth", "REM - FT Hours", "REM - Hours", "REM - PT Employment 3-mth", "REM - PT Hours", "REM - Stores", "REM - Stores 3-mth")
 
 #### Footfall Data ####
 
-FF=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!k6:k",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!q6:q",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_12mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!s6:s",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 11), c(NA, 11)),col_names = FALSE,col_types="numeric")*100
+FF_3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 17), c(NA, 17)),col_names = FALSE,col_types="numeric")*100
+FF_12mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 19), c(NA, 19)),col_names = FALSE,col_types="numeric")*100
 
-FF_Highst=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!h6:h",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_ShoppingCentre=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!j6:j",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_RetailPark=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!i6:i",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_Highst=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 8), c(NA, 8)),col_names = FALSE,col_types="numeric")*100
+FF_ShoppingCentre=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 10), c(NA, 10)),col_names = FALSE,col_types="numeric")*100
+FF_RetailPark=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 9), c(NA, 9)),col_names = FALSE,col_types="numeric")*100
 
-FF_Highst3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!m6:m",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_ShoppingCentre3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!o6:o",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
-FF_RetailPark3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",range=paste("Annual!n6:n",93+adddateFF,sep=""),col_names = FALSE,col_types="numeric")*100
+FF_Highst3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx",sheet = "Annual", range = cell_limits(c(6, 13), c(NA, 13)),col_names = FALSE,col_types="numeric")*100
+FF_ShoppingCentre3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 15), c(NA, 15)),col_names = FALSE,col_types="numeric")*100
+FF_RetailPark3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 14), c(NA, 14)),col_names = FALSE,col_types="numeric")*100
 
 FF=cbind(FF,FF_3mth,FF_12mth,FF_Highst,FF_ShoppingCentre,FF_RetailPark,FF_Highst3mth,FF_ShoppingCentre3mth,FF_RetailPark3mth)
 
 #### RSM Data ####
 
-RSM=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ci8:ci",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ue8:ue",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!zf8:zf",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!dp8:dp",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!em8:em",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Online_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!fj8:fj",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ay8:ay",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adq8:adq",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!adt8:adt",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ss8:ss",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sq8:sq",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_LFL_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!sr8:sr",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
+RSM=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 87), c(NA, 87)),col_names = FALSE,col_types="numeric")*100
+RSM_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 551), c(NA, 551)),col_names = FALSE,col_types="numeric")*100
+RSM_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 682), c(NA, 682)),col_names = FALSE,col_types="numeric")*100
+RSM_Online=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 120), c(NA, 120)),col_names = FALSE,col_types="numeric")*100
+RSM_Online_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 143), c(NA, 143)),col_names = FALSE,col_types="numeric")*100
+RSM_Online_12mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 166), c(NA, 166)),col_names = FALSE,col_types="numeric")*100
+RSM_LFL=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 51), c(NA, 51)),col_names = FALSE,col_types="numeric")*100
+RSM_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 797), c(NA, 797)),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_Stores=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 800), c(NA, 800)),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 513), c(NA, 513)),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 511), c(NA, 511)),col_names = FALSE,col_types="numeric")*100
+RSM_LFL_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 512), c(NA, 512)),col_names = FALSE,col_types="numeric")*100
 
-RSM_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!uc8:uc",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!ud8:ud",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")*100
-RSM_weeks=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", range=paste("UK RSM data!k8:k",282+adddateRSM,sep=""),col_names = FALSE,col_types="numeric")
+RSM_Food_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 549), c(NA, 549)),col_names = FALSE,col_types="numeric")*100
+RSM_NF_3mth=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 550), c(NA, 550)),col_names = FALSE,col_types="numeric")*100
+RSM_weeks=read_excel("Z:/Monitors/rsm/Data/RSM Data 2.0.xlsx", sheet = "UK RSM data", range = cell_limits(c(8, 11), c(NA, 11)),col_names = FALSE,col_types="numeric")
 
 RSM=cbind(RSM,RSM_3mth,RSM_12mth,RSM_Online,RSM_Online_3mth,RSM_Online_12mth,RSM_LFL,RSM_Stores,RSM_LFL_Stores,RSM_LFL_3mth,RSM_LFL_Food_3mth,RSM_LFL_NF_3mth,RSM_Food_3mth,RSM_NF_3mth)
 
@@ -2028,18 +2034,18 @@ adddateSPI=length(seq(from=ISOdate(2017,11,1), to=endateSPI, by="months"))-1
 
 setwd("Z:/Monitors/spi/Data/All SPI Data/ForDataCollation")
 
-SPI_All=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!c2:c",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Food=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!d2:d",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_NF=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!e2:e",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Clothes=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!j2:j",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Furniture=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!k2:k",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Elect=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!l2:l",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_DIY=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!m2:m",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Books=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!n2:n",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_HB=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!O2:O",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_ONF=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!O2:O",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Fresh=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!g2:g",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
-SPI_Ambient=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx",range=paste("Annual change!h2:h",133+adddateSPI,sep=""),col_names = FALSE,col_types="numeric")*100
+SPI_All=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 3), c(NA, 3)),col_names = FALSE,col_types="numeric")*100
+SPI_Food=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 4), c(NA, 4)),col_names = FALSE,col_types="numeric")*100
+SPI_NF=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 5), c(NA, 5)),col_names = FALSE,col_types="numeric")*100
+SPI_Clothes=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 10), c(NA, 10)),col_names = FALSE,col_types="numeric")*100
+SPI_Furniture=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 11), c(NA, 11)),col_names = FALSE,col_types="numeric")*100
+SPI_Elect=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 12), c(NA, 12)),col_names = FALSE,col_types="numeric")*100
+SPI_DIY=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 13), c(NA, 13)),col_names = FALSE,col_types="numeric")*100
+SPI_Books=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 14), c(NA, 14)),col_names = FALSE,col_types="numeric")*100
+SPI_HB=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 15), c(NA, 15)),col_names = FALSE,col_types="numeric")*100
+SPI_ONF=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 16), c(NA, 16)),col_names = FALSE,col_types="numeric")*100
+SPI_Fresh=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 7), c(NA, 7)),col_names = FALSE,col_types="numeric")*100
+SPI_Ambient=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 8), c(NA, 8)),col_names = FALSE,col_types="numeric")*100
 
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_All), by="months")
@@ -2101,6 +2107,10 @@ dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Ambient), by="months")
 dates <- LastDayInMonth(dates)
 spi_ambient <- xts(x=SPI_Ambient, order.by=dates)
 colnames(spi_ambient) <- "SPI Ambient Food"
+
+spi_xts <- merge(spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, all = TRUE, fill = NA)
+spi_df <- cbind(SPI_All, SPI_Ambient, SPI_Books, SPI_Clothes, SPI_DIY, SPI_Elect, SPI_Food, SPI_Fresh, SPI_Furniture, SPI_HB, SPI_NF, SPI_ONF)
+colnames(spi_df) <- c("SPI_All", "id", "SPI_Ambient", "SPI_Books", "SPI_Clothes", "SPI_DIY", "SPI_Elect", "SPI_Food", "SPI_Fresh", "SPI_Furniture", "SPI_HB", "SPI_NF", "SPI_ONF")
 
 #### Database Merge ####
 

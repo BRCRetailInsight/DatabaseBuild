@@ -22,14 +22,14 @@ ui <- dashboardPage(skin = "blue",
                  dashboardHeader(title = "BRC DATA DASHBOARD", titleWidth = 300),
                  dashboardSidebar(width = 300,
                    sidebarMenu(id = "sidebarmenu",
-                     menuItem("BRC Data Snapshot", icon = icon("th"), tabName = "brcstats"),
-                     menuItem("External Data Snapshot", icon = icon("th"), tabName = "extstats"),
+                     menuItem("Retail KPI's", icon = icon("th"), tabName = "brcstats"),
+                     menuItem("Economic Conditions", icon = icon("th"), tabName = "extstats"),
                      menuItem("Monthly Data Graph", icon = icon("chart-line"), tabName = "dygraph"),
                        conditionalPanel("input.sidebarmenu === 'dygraph'",
-                                        selectInput("selector", "Select Series", multiple = TRUE, choices = colnames(databasemonthly), selected = "CPI.All.Items")),
+                                        selectInput("selector", "Select Series", multiple = TRUE, choices = colnames(databasemonthly), selected = "Unemployment.Rate.UK")),
                      menuItem("Monthly Data Table", icon = icon("table"), tabName = "table"),
                        conditionalPanel("input.sidebarmenu === 'table'",
-                                        selectInput("selector2", "Select Series", multiple = TRUE, choices = colnames(databasemonthlydf), selected = c("CPI.All.Items", "date")),
+                                        selectInput("selector2", "Select Series", multiple = TRUE, choices = colnames(databasemonthlydf), selected = c("Unemployment.Rate.UK", "date")),
                                         dateRangeInput("selector3", "Select Dates", start = "2001-01-01", end = Sys.Date(),
                                                        format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("Quarterly Data Graph", icon = icon("chart-line"), tabName = "dygraph2"),
@@ -42,10 +42,10 @@ ui <- dashboardPage(skin = "blue",
                                                      format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("Yearly Data Graph", icon = icon("chart-line"), tabName = "dygraph3"),
                      conditionalPanel("input.sidebarmenu === 'dygraph3'",
-                                      selectInput("selector7", "Select Series", multiple = TRUE, choices = colnames(databaseyearly), selected = "Local.Units...UK")),
+                                      selectInput("selector7", "Select Series", multiple = TRUE, choices = colnames(databaseyearly), selected = "United.Kingdom.Total.Median_OBS_VALUE")),
                      menuItem("Yearly Data Table", icon = icon("table"), tabName = "table3"),
                      conditionalPanel("input.sidebarmenu === 'table3'",
-                                      selectInput("selector8", "Select Series", multiple = TRUE, choices = colnames(databaseyearlydf), selected = c("Local.Units...UK", "date")),
+                                      selectInput("selector8", "Select Series", multiple = TRUE, choices = colnames(databaseyearlydf), selected = c("United.Kingdom.Total.Median_OBS_VALUE", "date")),
                                       dateRangeInput("selector9", "Select Dates", start = "2001-01-01", end = Sys.Date(),
                                                      format = "yyyy-mm-dd", weekstart = 0)),
                      menuItem("UK Nations Map", icon = icon("map-marked-alt"), tabName = "nationmap"),
@@ -63,59 +63,59 @@ ui <- dashboardPage(skin = "blue",
                     tabItems(
                           
                       tabItem(tabName = "brcstats",
-                        h3("BRC Data Snapshot"),
+                        h3("Retail KPI's"),
                         
                         fluidRow(
-                          valueBox(subtitle = "RSM Total (YoY Change)", value = paste0(round(tail(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = "RSM Total Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales 3 month average (% yoy change)`, 1), 1), "%"), color = "red"),
-                          valueBox(subtitle = "RSM Total Non-Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales Non-Food 3 month average (% yoy change)`, 1), 1), "%"), color = "red")),
+                          valueBox(subtitle = "RSM Total (YoY Change)", value = paste0(round(tail(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`[!is.na(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`)], 1), 1),"%"), color = "red", icon = icon("cart-plus")),
+                          valueBox(subtitle = "RSM Total Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales 3 month average (% yoy change)`[!is.na(RSM$`Food Sales 3 month average (% yoy change)`)], 1), 1), "%"), color = "red", icon = icon("shopping-basket")),
+                          valueBox(subtitle = "RSM Total Non-Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales Non-Food 3 month average (% yoy change)`[!is.na(RSM$`Food Sales Non-Food 3 month average (% yoy change)`)], 1), 1), "%"), color = "red", icon = icon("shopping-bag"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "SPI All Items (YoY Change)", value = paste0(round(tail(spi_all, 1), 1), "%"), color = "yellow"),
-                          valueBox(subtitle = "SPI Food (YoY Change)", value = paste0(round(tail(spi_food, 1), 1), "%"), color = "yellow"),
-                          valueBox(subtitle = "SPI Non-Food (YoY Change)", value = paste0(round(tail(spi_nonfood, 1), 1), "%"), color = "yellow")),
+                          valueBox(subtitle = "SPI All Items (YoY Change)", value = paste0(round(tail(spi_all[!is.na(spi_all)], 1), 1), "%"), color = "yellow", icon = icon("chart-line")),
+                          valueBox(subtitle = "SPI Food (YoY Change)", value = paste0(round(tail(spi_food[!is.na(spi_food)], 1), 1), "%"), color = "yellow", icon = icon("chart-bar")),
+                          valueBox(subtitle = "SPI Non-Food (YoY Change)", value = paste0(round(tail(spi_nonfood[!is.na(spi_nonfood)], 1), 1), "%"), color = "yellow", icon = icon("chart-area"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "High Street Footfall (YoY Change)", value = paste0(round(tail(FF_Highst, 1), 1), "%"), color = "green"),
-                          valueBox(subtitle = "Retail Park Footfall (YoY Change)", value = paste0(round(tail(FF_RetailPark, 1), 1), "%"), color = "green"),
-                          valueBox(subtitle = "Shopping Centre Footfall (YoY Change)", value = paste0(round(tail(FF_ShoppingCentre, 1), 1), "%"), color = "green")),
+                          valueBox(subtitle = "High Street Footfall (YoY Change)", value = paste0(round(tail(FF_Highst[!is.na(FF_Highst)], 1), 1), "%"), color = "green", icon = icon("male")),
+                          valueBox(subtitle = "Retail Park Footfall (YoY Change)", value = paste0(round(tail(FF_RetailPark[!is.na(FF_RetailPark)], 1), 1), "%"), color = "green", icon = icon("walking")),
+                          valueBox(subtitle = "Shopping Centre Footfall (YoY Change)", value = paste0(round(tail(FF_ShoppingCentre[!is.na(FF_ShoppingCentre)], 1), 1), "%"), color = "green", icon = icon("female"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "REM Employment (YoY Change)", value = paste0(round(tail(REM_emp, 1), 1), "%"), color = "aqua"),
-                          valueBox(subtitle = "REM Hours (YoY Change)", value = paste0(round(tail(REM_hrs, 1), 1), "%"), color = "aqua"),
-                          valueBox(subtitle = "REM Stores (YoY Change)", value = paste0(round(tail(REM_stores, 1), 1), "%"), color = "aqua")),
+                          valueBox(subtitle = "REM Employment (YoY Change)", value = paste0(round(tail(REM_emp[!is.na(REM_emp)], 1), 1), "%"), color = "aqua", icon = icon("user-graduate")),
+                          valueBox(subtitle = "REM Hours (YoY Change)", value = paste0(round(tail(REM_hrs[!is.na(REM_hrs)], 1), 1), "%"), color = "aqua", icon = icon("clock")),
+                          valueBox(subtitle = "REM Stores (YoY Change)", value = paste0(round(tail(REM_stores[!is.na(REM_stores)], 1), 1), "%"), color = "aqua", icon = icon("building"))),
                         
                         fluidRow(
-                          valueBox(subtitle = "DRI Website Visits (YoY Change)", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Growth in retailer website visits (yoy %)`, 1), 1), "%"), color = "blue"),
-                          valueBox(subtitle = "DRI Mobile Share", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Mobile Share of retail website visits (%)`, 1), 1), "%"), color = "blue"))),
+                          valueBox(subtitle = "DRI Website Visits (YoY Change)", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Growth in retailer website visits (yoy %)`[!is.na(DRI_Master$`BRC-Hitwise Growth in retailer website visits (yoy %)`)], 1), 1), "%"), color = "blue", icon = icon("desktop")),
+                          valueBox(subtitle = "DRI Mobile Share", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Mobile Share of retail website visits (%)`[!is.na(DRI_Master$`BRC-Hitwise Mobile Share of retail website visits (%)`)], 1), 1), "%"), color = "blue", icon = icon("mobile")))),
                         
                         
                       tabItem(tabName = "extstats",
-                        h3("External Data Snapshot"),
+                        h3("Economic Conditions"),
                                     
                         fluidRow(
-                          valueBox(subtitle = paste("RSI Overall (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = paste("RSI Food (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Predom food stores`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Predom food stores`, 1), 1),"%"), color = "red"),
-                          valueBox(subtitle = paste("RSI Online (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Internet`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Internet`, 1), 1),"%"), color = "red")),
+                          valueBox(subtitle = paste("RSI Overall (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - All retail exc auto fuel`, 1), 1),"%"), color = "red", icon = icon("cart-plus")),
+                          valueBox(subtitle = paste("RSI Food (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Predom food stores`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Predom food stores`, 1), 1),"%"), color = "red", icon = icon("shopping-basket")),
+                          valueBox(subtitle = paste("RSI Online (NSA) (YoY Change)","  ", format(index(tail(rsi_val$`RSI Values - Internet`, 1)), "%Y %B")), value = paste0(round(tail(rsi_val$`RSI Values - Internet`, 1), 1),"%"), color = "red", icon = icon("shipping-fast"))),
                         
                         fluidRow(
-                          valueBox(subtitle = paste("CPI All Items (YoY Change)","  ", format(index(tail(cpi_all, 1)), "%Y %B")), value = paste0(tail(cpi_all, 1), "%"), color = "yellow"),
-                          valueBox(subtitle = paste("CPI Food (YoY Change)","  ", format(index(tail(cpi_food, 1)), "%Y %B")), value = paste0(round(tail(cpi_food, 1), 1), "%"), color = "yellow"),
-                          valueBox(subtitle = paste("CPI Non-Food (YoY Change)","  ", format(index(tail(cpi_nonfood, 1)), "%Y %B")), value = paste0(round(tail(cpi_nonfood, 1), 1), "%"), color = "yellow")),
+                          valueBox(subtitle = paste("CPI All Items (YoY Change)","  ", format(index(tail(cpi_all, 1)), "%Y %B")), value = paste0(tail(cpi_all, 1), "%"), color = "yellow", icon = icon("chart-line")),
+                          valueBox(subtitle = paste("CPI Food (YoY Change)","  ", format(index(tail(cpi_food, 1)), "%Y %B")), value = paste0(round(tail(cpi_food, 1), 1), "%"), color = "yellow", icon = icon("chart-bar")),
+                          valueBox(subtitle = paste("CPI Non-Food (YoY Change)","  ", format(index(tail(cpi_nonfood, 1)), "%Y %B")), value = paste0(round(tail(cpi_nonfood, 1), 1), "%"), color = "yellow", icon = icon("chart-area"))),
                         
                         fluidRow(
-                          valueBox(subtitle = paste("GVA Whole Economy (YoY Change)","  ", format(index(tail(GVAmonthly_yoy, 1)), "%Y %B")), value = paste0(tail(GVAmonthly_yoy), "%"), color = "green"),
-                          valueBox(subtitle = paste("GVA Whole Economy Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_all, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_all, 1), big.mark = ",", scientific=FALSE)), color = "green"),
-                          valueBox(subtitle = paste("GVA Retail Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_retail, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_retail, 1), big.mark = ",", scientific=FALSE)), color = "green")),
+                          valueBox(subtitle = paste("GVA Whole Economy (YoY Change)","  ", format(index(tail(GVAmonthly_yoy, 1)), "%Y %B")), value = paste0(tail(GVAmonthly_yoy), "%"), color = "green", icon = icon("briefcase")),
+                          valueBox(subtitle = paste("GVA Whole Economy Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_all, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_all, 1), big.mark = ",", scientific=FALSE)), color = "green", icon = icon("city")),
+                          valueBox(subtitle = paste("GVA Retail Quarterly (£m)","  ", as.yearqtr(index(tail(GVAquarterly_retail, 1)), format = "%Y-%m-%d")), value = paste0("£", prettyNum(tail(GVAquarterly_retail, 1), big.mark = ",", scientific=FALSE)), color = "green", icon = icon("industry"))),
                         
                         fluidRow(
-                          valueBox(subtitle = paste("Unempoyment Rate","  ", format(index(tail(unemp$`Unemployment Rate UK`, 1)), "%Y %B")), value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua"),
-                          valueBox(subtitle = paste("Jobs Whole Economy (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_all, 1)), format = "%d-%m-%Y")), value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua"),
-                          valueBox(subtitle = paste("Jobs Retail (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_retail, 1)), format = "%Y-%m-%d")), value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua")),
+                          valueBox(subtitle = paste("Unempoyment Rate","  ", format(index(tail(unemp$`Unemployment Rate UK`, 1)), "%Y %B")), value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua", icon = icon("user-tie")),
+                          valueBox(subtitle = paste("Jobs Whole Economy (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_all, 1)), format = "%d-%m-%Y")), value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("users")),
+                          valueBox(subtitle = paste("Jobs Retail (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_retail, 1)), format = "%Y-%m-%d")), value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("people-carry"))),
                         
                         fluidRow(
-                          valueBox(subtitle = paste("Average Weekly Earnings - Regular Pay (YoY Change)","  ", format(index(tail(awe$`Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue"),
-                          valueBox(subtitle = paste("Average Weekly Earnings - Real Regular Pay (YoY Change)","  ", format(index(tail(awe$`Real Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Real Regular Pay YoY Growth`, 1), "%"), color = "blue"))),
+                          valueBox(subtitle = paste("Average Weekly Earnings - Regular Pay (YoY Change)","  ", format(index(tail(awe$`Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue", icon = icon("money-bill-wave")),
+                          valueBox(subtitle = paste("Average Weekly Earnings - Real Regular Pay (YoY Change)","  ", format(index(tail(awe$`Real Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Real Regular Pay YoY Growth`, 1), "%"), color = "blue", icon = icon("credit-card")))),
                         
                         
                       tabItem(tabName = "dygraph",
@@ -213,7 +213,7 @@ server <- function(input, output, session) {
 
   output$dygraph <- renderDygraph({
     dygraph(data()) %>%
-      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
+      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol, mobileDisableYTouch = TRUE) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
       dyLegend(labelsDiv = "dylegend1") %>%
@@ -244,7 +244,7 @@ server <- function(input, output, session) {
   
   output$dygraph2 <- renderDygraph({
     dygraph(data3()) %>%
-      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
+      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol, mobileDisableYTouch = TRUE) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
       dyLegend(labelsDiv = "dylegend2") %>%
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
   
   output$dygraph3 <- renderDygraph({
     dygraph(data5()) %>%
-      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol) %>%
+      dyOptions(labelsUTC = TRUE, fillGraph=FALSE, fillAlpha=0.1, drawGrid = FALSE, colors=BRCcol, mobileDisableYTouch = TRUE) %>%
       dyAxis("y", drawGrid = TRUE, gridLineColor = "lightgrey") %>%
       dyRangeSelector() %>%
       dyLegend(labelsDiv = "dylegend3") %>%
