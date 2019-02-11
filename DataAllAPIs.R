@@ -1943,6 +1943,32 @@ names(DRI_Master)[1:2]=c("BRC-Hitwise Mobile Share of retail website visits (%)"
 
 DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]=DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]*100
 
+dri_embargo <- data.frame(
+  id = as.numeric(52:65),
+  embargo = as.Date(c("2018-12-06", "2019-01-11", "2019-02-07", "2019-03-07", "2019-04-11", "2019-05-09", "2019-06-06", "2019-07-11", "2019-08-08", "2019-09-05", "2019-10-10", "2019-11-07", "2019-12-05", "2020-01-10")
+  ))
+
+DRI_Master$id <- as.numeric(row.names(DRI_Master))
+
+DRI_Master <- merge(DRI_Master, dri_embargo, by = "id", all = TRUE)
+
+DRI_Master <- DRI_Master[order(DRI_Master$id),]
+
+dridates <- seq(as.Date("2014-08-01"), length=nrow(DRI_Master), by="months")
+dridates <- LastDayInMonth(dridates)
+DRI_Master_xts <- xts(x=DRI_Master, order.by=dridates)
+
+DRI_Masterdf <- data.frame(date = index(DRI_Master_xts), coredata(DRI_Master_xts))
+
+DRI_Masterdf$embargo <- as.Date(DRI_Masterdf$embargo)
+
+DRI_Master_embargo <- DRI_Masterdf %>%
+  filter(DRI_Masterdf$date <= Sys.Date() & DRI_Masterdf$embargo <= Sys.Date() | (DRI_Masterdf$date <= "2019-01-31" & is.na(DRI_Masterdf$embargo)))
+
+dridates <- seq(as.Date("2006-12-01"), length=nrow(DRI_Master_embargo), by="months")
+dridates <- LastDayInMonth(dridates)
+DRI_embargo_xts <- xts(x = DRI_Master_embargo, order.by = dridates)
+
 #### REM Data ####
 
 REM_emp = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm",sheet = "Headlines & Charts", range = cell_limits(c(22, 5), c(22, NA)),col_names = FALSE,col_types="numeric")*100))
@@ -1956,6 +1982,34 @@ REM_stores3mth = as.data.frame(t(read_excel("Z:/Monitors/rem/Data/REMMaster.xlsm
 
 REM <- cbind(REM_emp, REM_FTemp3mth, REM_FThrs, REM_hrs, REM_PTemp3mth, REM_PThrs, REM_stores, REM_stores3mth)
 colnames(REM) <- c("REM - Employment", "REM - FT Employment 3-mth", "REM - FT Hours", "REM - Hours", "REM - PT Employment 3-mth", "REM - PT Hours", "REM - Stores", "REM - Stores 3-mth")
+
+rem_embargo <- data.frame(
+  id = as.numeric(123:135),
+  embargo = as.Date(c("2019-01-24", "2019-04-25", "2019-04-25", "2019-04-25", "2019-07-25", "2019-07-25", "2019-07-25", "2019-10-24", "2019-10-24", "2019-10-24", "2020-01-23", "2020-01-23", "2020-01-23")
+  ))
+
+row.names(REM) <- 1:nrow(REM)
+
+REM$id <- as.numeric(row.names(REM))
+
+REM <- merge(REM, rem_embargo, by = "id", all = TRUE)
+
+REM <- REM[order(REM$id),]
+
+remdates <- seq(as.Date("2008-10-01"), length=nrow(REM), by="months")
+remdates <- LastDayInMonth(remdates)
+REM_xts <- xts(x=REM, order.by=remdates)
+
+REM_df <- data.frame(date = index(REM_xts), coredata(REM_xts))
+
+REM_df$embargo <- as.Date(REM_df$embargo)
+
+REM_embargo_df <- REM_df %>%
+  filter(REM_df$date <= Sys.Date() & REM_df$embargo <= Sys.Date() | (REM_df$date <= "2019-01-31" & is.na(REM_df$embargo)))
+
+remdates <- seq(as.Date("2006-12-01"), length=nrow(REM_embargo_df), by="months")
+remdates <- LastDayInMonth(remdates)
+REM_embargo_xts <- xts(x = REM_embargo_df, order.by = remdates)
 
 #### Footfall Data ####
 
@@ -1972,6 +2026,42 @@ FF_ShoppingCentre3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xls
 FF_RetailPark3mth=read_excel("Z:/Monitors/ff/Data/FootfallMasterWeighted.xlsx", sheet = "Annual", range = cell_limits(c(6, 14), c(NA, 14)),col_names = FALSE,col_types="numeric")*100
 
 FF=cbind(FF,FF_3mth,FF_12mth,FF_Highst,FF_ShoppingCentre,FF_RetailPark,FF_Highst3mth,FF_ShoppingCentre3mth,FF_RetailPark3mth)
+
+names(FF)[1]="Footfall UK (% yoy change):BRC-Springboard"
+names(FF)[2]="Footfall UK 3 month average (% yoy change):BRC-Springboard"
+names(FF)[3]="Footfall UK 12 month average (% yoy change):BRC-Springboard"
+names(FF)[4]="Footfall High Street (% yoy change):BRC-Springboard"
+names(FF)[5]="Footfall Shopping Centre (% yoy change):BRC-Springboard"
+names(FF)[6]="Footfall Retail Park (% yoy change):BRC-Springboard"
+names(FF)[7]="Footfall High Street 3 month average (% yoy change):BRC-Springboard"
+names(FF)[8]="Footfall Shopping Centre 3 month average (% yoy change):BRC-Springboard"
+names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboard"
+
+ff_embargo <- data.frame(
+  id = as.numeric(97:110),
+  embargo = as.Date(c("2018-12-10", "2019-01-14", "2019-02-11", "2019-03-11", "2019-04-15", "2019-05-13", "2019-06-10", "2019-07-15", "2019-08-12", "2019-09-09", "2019-10-14", "2019-11-11", "2019-12-09", "2020-01-13")
+  ))
+
+FF$id <- as.numeric(row.names(FF))
+
+FF <- merge(FF, ff_embargo, by = "id", all = TRUE)
+
+FF <- FF[order(FF$id),]
+
+ffdates <- seq(as.Date("2010-11-01"), length=nrow(FF), by="months")
+ffdates <- LastDayInMonth(ffdates)
+FF_xts <- xts(x=FF, order.by=ffdates)
+
+FF_df <- data.frame(date = index(FF_xts), coredata(FF_xts))
+
+FF_df$embargo <- as.Date(FF_df$embargo)
+
+FF_embargo_df <- FF_df %>%
+  filter(FF_df$date <= Sys.Date() & FF_df$embargo <= Sys.Date() | (FF_df$date <= "2019-01-31" & is.na(FF_df$embargo)))
+
+ffdates <- seq(as.Date("2006-12-01"), length=nrow(FF_embargo_df), by="months")
+ffdates <- LastDayInMonth(ffdates)
+FF_embargo_xts <- xts(x = FF_embargo_df, order.by = ffdates)
 
 #### RSM Data ####
 
@@ -2012,15 +2102,31 @@ names(RSM)[12]="Non-Food Like for Like Sales 3 month average (% yoy change):BRC-
 names(RSM)[13]="Food Sales 3 month average (% yoy change)"
 names(RSM)[14]="Food Sales Non-Food 3 month average (% yoy change)"
 
-names(FF)[1]="Footfall UK (% yoy change):BRC-Springboard"
-names(FF)[2]="Footfall UK 3 month average (% yoy change):BRC-Springboard"
-names(FF)[3]="Footfall UK 12 month average (% yoy change):BRC-Springboard"
-names(FF)[4]="Footfall High Street (% yoy change):BRC-Springboard"
-names(FF)[5]="Footfall Shopping Centre (% yoy change):BRC-Springboard"
-names(FF)[6]="Footfall Retail Park (% yoy change):BRC-Springboard"
-names(FF)[7]="Footfall High Street 3 month average (% yoy change):BRC-Springboard"
-names(FF)[8]="Footfall Shopping Centre 3 month average (% yoy change):BRC-Springboard"
-names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboard"
+rsm_embargo <- data.frame(
+  id = as.numeric(287:300),
+  embargo = as.Date(c("2018-12-04", "2019-01-10", "2019-02-05", "2019-03-05", "2019-04-09", "2019-05-08", "2019-06-04", "2019-07-09", "2019-08-06", "2019-09-03", "2019-10-08", "2019-11-05", "2019-12-03", "2020-01-09")
+  ))
+
+RSM$id <- as.numeric(row.names(RSM))
+
+RSM_all <- merge(RSM, rsm_embargo, by = "id", all = TRUE)
+
+RSM_all <- RSM_all[order(RSM_all$id),]
+
+rsmdates <- seq(as.Date("1995-01-01"), length=nrow(RSM_all), by="months")
+rsmdates <- LastDayInMonth(rsmdates)
+RSM_all_xts <- xts(x=RSM_all, order.by=rsmdates)
+
+RSM_alldf <- data.frame(date = index(RSM_all_xts), coredata(RSM_all_xts))
+
+RSM_alldf$embargo <- as.Date(RSM_alldf$embargo)
+
+RSM_all_embargo_df <- RSM_alldf %>%
+  filter(RSM_alldf$date <= Sys.Date() & RSM_alldf$embargo <= Sys.Date() | (RSM_alldf$date <= "2019-01-31" & is.na(RSM_alldf$embargo)))
+
+rsmdates <- seq(as.Date("2006-12-01"), length=nrow(RSM_all_embargo), by="months")
+rsmdates <- LastDayInMonth(rsmdates)
+RSM_embargo_xts <- xts(x = RSM_all_embargo_df, order.by = rsmdates)
 
 setwd("Z:/Projects/RIADatabaseBuild")
 
@@ -2047,75 +2153,41 @@ SPI_ONF=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "
 SPI_Fresh=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 7), c(NA, 7)),col_names = FALSE,col_types="numeric")*100
 SPI_Ambient=read_excel("Z:/Monitors/spi/Data/All SPI Data/SPIMaster.xlsx", sheet = "Annual change", range = cell_limits(c(2, 8), c(NA, 8)),col_names = FALSE,col_types="numeric")*100
 
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_All), by="months")
-dates <- LastDayInMonth(dates)
-spi_all <- xts(x=SPI_All, order.by=dates)
-colnames(spi_all) <- "SPI All Items"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Food), by="months")
-dates <- LastDayInMonth(dates)
-spi_food <- xts(x=SPI_Food, order.by=dates)
-colnames(spi_food) <- "SPI Food"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_NF), by="months")
-dates <- LastDayInMonth(dates)
-spi_nonfood <- xts(x=SPI_NF, order.by=dates)
-colnames(spi_nonfood) <- "SPI Non-Food"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Clothes), by="months")
-dates <- LastDayInMonth(dates)
-spi_clothes <- xts(x=SPI_Clothes, order.by=dates)
-colnames(spi_clothes) <- "SPI Clothing"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Furniture), by="months")
-dates <- LastDayInMonth(dates)
-spi_furniture <- xts(x=SPI_Furniture, order.by=dates)
-colnames(spi_furniture) <- "SPI Furniture"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Elect), by="months")
-dates <- LastDayInMonth(dates)
-spi_electricals <- xts(x=SPI_Elect, order.by=dates)
-colnames(spi_electricals) <- "SPI Electricals"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_DIY), by="months")
-dates <- LastDayInMonth(dates)
-spi_diy <- xts(x=SPI_DIY, order.by=dates)
-colnames(spi_diy) <- "SPI DIY"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Books), by="months")
-dates <- LastDayInMonth(dates)
-spi_books <- xts(x=SPI_Books, order.by=dates)
-colnames(spi_books) <- "SPI Books"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_HB), by="months")
-dates <- LastDayInMonth(dates)
-spi_health <- xts(x=SPI_HB, order.by=dates)
-colnames(spi_health) <- "SPI Health & Beauty"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_ONF), by="months")
-dates <- LastDayInMonth(dates)
-spi_othnonfood <- xts(x=SPI_ONF, order.by=dates)
-colnames(spi_othnonfood) <- "SPI Other Non-Food"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Fresh), by="months")
-dates <- LastDayInMonth(dates)
-spi_fresh <- xts(x=SPI_Fresh, order.by=dates)
-colnames(spi_fresh) <- "SPI Fresh Food"
-
-dates <- seq(as.Date("2006-12-01"), length=nrow(SPI_Ambient), by="months")
-dates <- LastDayInMonth(dates)
-spi_ambient <- xts(x=SPI_Ambient, order.by=dates)
-colnames(spi_ambient) <- "SPI Ambient Food"
-
-spi_xts <- merge(spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, all = TRUE, fill = NA)
 spi_df <- cbind(SPI_All, SPI_Ambient, SPI_Books, SPI_Clothes, SPI_DIY, SPI_Elect, SPI_Food, SPI_Fresh, SPI_Furniture, SPI_HB, SPI_NF, SPI_ONF)
-colnames(spi_df) <- c("SPI_All", "id", "SPI_Ambient", "SPI_Books", "SPI_Clothes", "SPI_DIY", "SPI_Elect", "SPI_Food", "SPI_Fresh", "SPI_Furniture", "SPI_HB", "SPI_NF", "SPI_ONF")
+spi_df <- head(spi_df, -7)
+colnames(spi_df) <- c("SPI_All", "SPI_Ambient", "SPI_Books", "SPI_Clothes", "SPI_DIY", "SPI_Elect", "SPI_Food", "SPI_Fresh", "SPI_Furniture", "SPI_HB", "SPI_NF", "SPI_ONF")
+
+spi_embargo <- data.frame(
+  id = as.numeric(144:157),
+  embargo = as.Date(c("2018-11-28", "2019-01-04", "2019-01-30", "2019-02-27", "2019-04-03", "2019-05-01", "2019-05-29", "2019-07-03", "2019-07-31", "2019-08-28", "2019-10-02", "2019-10-30", "2019-11-27", "2020-01-03")
+  ))
+
+spi_df$id <- as.numeric(row.names(spi_df))
+
+spi_all_show <- merge(spi_df, spi_embargo, by = "id", all = TRUE)
+
+spi_all_show <- spi_all_show[order(spi_all_show$id),]
+
+dates <- seq(as.Date("2006-12-01"), length=nrow(spi_all_show), by="months")
+dates <- LastDayInMonth(dates)
+spi_all_show <- xts(x=spi_all_show, order.by=dates)
+
+spi_all_showdf <- data.frame(date = index(spi_all_show), coredata(spi_all_show))
+
+spi_all_showdf$embargo <- as.Date(spi_all_showdf$embargo)
+
+spi_all_embargo_df <- spi_all_showdf %>%
+  filter(spi_all_showdf$date <= Sys.Date() & spi_all_showdf$embargo <= Sys.Date() | (spi_all_showdf$date <= "2019-01-31" & is.na(spi_all_showdf$embargo)))
+
+dates <- seq(as.Date("2006-12-01"), length=nrow(spi_all_embargo_df), by="months")
+dates <- LastDayInMonth(dates)
+spi_all_embargo_xts <- xts(x=spi_all_embargo_df, order.by = dates)
+
 
 #### Database Merge ####
 
 # merge xts objects into one big dataset and create dataframe for table - Monthly Data
-databasemonthly <- merge(cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy, cpi_electricals, cpi_food, cpi_fresh, cpi_furniture, cpi_health, cpi_nonfood, cpi_othnonfood, spi_all, spi_ambient, spi_books, spi_clothes, spi_diy, spi_electricals, spi_food, spi_fresh, spi_furniture, spi_health, spi_nonfood, spi_othnonfood, awe, boe_ccards, boe_conscredit, boe_gbp, boe_house, boe_secured, HPengland, HPwales, HPscotland, HPnorthern_ireland, HPlondon, HPeast, HPeastmid, HPwestmid, HPnortheast, HPnorthwest, HPsoutheast, HPsouthwest, HPyork, employ, unemp, GVAmonthly_mom, GVAmonthly_yoy, rsi_val, rsi_vol, all = TRUE, fill = NA)
+databasemonthly <- merge(spi_all_embargo_xts[,3:14], RSM_embargo_xts[,3:16], FF_embargo_xts[,3:11], REM_embargo_xts[,3:10], DRI_embargo_xts[,3:5], cpi_all, cpi_ambient, cpi_books, cpi_clothing, cpi_diy, cpi_electricals, cpi_food, cpi_fresh, cpi_furniture, cpi_health, cpi_nonfood, cpi_othnonfood, awe, boe_ccards, boe_conscredit, boe_gbp, boe_house, boe_secured, HPengland, HPwales, HPscotland, HPnorthern_ireland, HPlondon, HPeast, HPeastmid, HPwestmid, HPnortheast, HPnorthwest, HPsoutheast, HPsouthwest, HPyork, employ, unemp, GVAmonthly_mom, GVAmonthly_yoy, rsi_val, rsi_vol, all = TRUE, fill = NA)
 databasemonthlydf <- data.frame(date=index(databasemonthly), coredata(databasemonthly))
 
 # merge xts objects into one big dataset and create dataframe for table - Quarterly Data

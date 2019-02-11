@@ -66,28 +66,28 @@ ui <- dashboardPage(skin = "blue",
                         h3("Retail KPI's"),
                         
                         fluidRow(
-                          valueBox(subtitle = "RSM Total (YoY Change)", value = paste0(round(tail(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`[!is.na(RSM$`Total Sales (% yoy change):BRC-KPMG RSM`)], 1), 1),"%"), color = "red", icon = icon("cart-plus")),
-                          valueBox(subtitle = "RSM Total Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales 3 month average (% yoy change)`[!is.na(RSM$`Food Sales 3 month average (% yoy change)`)], 1), 1), "%"), color = "red", icon = icon("shopping-basket")),
-                          valueBox(subtitle = "RSM Total Non-Food 3-mth avg (YoY Change)", value = paste0(round(tail(RSM$`Food Sales Non-Food 3 month average (% yoy change)`[!is.na(RSM$`Food Sales Non-Food 3 month average (% yoy change)`)], 1), 1), "%"), color = "red", icon = icon("shopping-bag"))),
+                          valueBox(subtitle = "RSM Total (YoY Change)", value = paste0(round(tail(databasemonthly$Total.Sales....yoy.change..BRC.KPMG.RSM[!is.na(databasemonthly$Total.Sales....yoy.change..BRC.KPMG.RSM)], 1), 1),"%"), color = "red", icon = icon("cart-plus")),
+                          valueBox(subtitle = "RSM Total Food 3-mth avg (YoY Change)", value = paste0(round(tail(databasemonthly$Food.Sales.3.month.average....yoy.change.[!is.na(databasemonthly$Food.Sales.3.month.average....yoy.change.)], 1), 1), "%"), color = "red", icon = icon("shopping-basket")),
+                          valueBox(subtitle = "RSM Total Non-Food 3-mth avg (YoY Change)", value = paste0(round(tail(databasemonthly$Food.Sales.Non.Food.3.month.average....yoy.change.[!is.na(databasemonthly$Food.Sales.Non.Food.3.month.average....yoy.change.)], 1), 1), "%"), color = "red", icon = icon("shopping-bag"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "SPI All Items (YoY Change)", value = paste0(round(tail(spi_all[!is.na(spi_all)], 1), 1), "%"), color = "yellow", icon = icon("chart-line")),
-                          valueBox(subtitle = "SPI Food (YoY Change)", value = paste0(round(tail(spi_food[!is.na(spi_food)], 1), 1), "%"), color = "yellow", icon = icon("chart-bar")),
-                          valueBox(subtitle = "SPI Non-Food (YoY Change)", value = paste0(round(tail(spi_nonfood[!is.na(spi_nonfood)], 1), 1), "%"), color = "yellow", icon = icon("chart-area"))),
+                          valueBox(subtitle = "SPI All Items (YoY Change)", value = paste0(round(tail(databasemonthly$SPI_All[!is.na(databasemonthly$SPI_All)], 1), 1), "%"), color = "yellow", icon = icon("chart-line")),
+                          valueBox(subtitle = "SPI Food (YoY Change)", value = paste0(round(tail(databasemonthly$SPI_Food[!is.na(databasemonthly$SPI_Food)], 1), 1), "%"), color = "yellow", icon = icon("chart-bar")),
+                          valueBox(subtitle = "SPI Non-Food (YoY Change)", value = paste0(round(tail(databasemonthly$SPI_NF[!is.na(databasemonthly$SPI_NF)], 1), 1), "%"), color = "yellow", icon = icon("chart-area"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "High Street Footfall (YoY Change)", value = paste0(round(tail(FF_Highst[!is.na(FF_Highst)], 1), 1), "%"), color = "green", icon = icon("male")),
-                          valueBox(subtitle = "Retail Park Footfall (YoY Change)", value = paste0(round(tail(FF_RetailPark[!is.na(FF_RetailPark)], 1), 1), "%"), color = "green", icon = icon("walking")),
-                          valueBox(subtitle = "Shopping Centre Footfall (YoY Change)", value = paste0(round(tail(FF_ShoppingCentre[!is.na(FF_ShoppingCentre)], 1), 1), "%"), color = "green", icon = icon("female"))),
+                          valueBox(subtitle = "High Street Footfall (YoY Change)", value = paste0(round(tail(databasemonthly$Footfall.High.Street....yoy.change..BRC.Springboard[!is.na(databasemonthly$Footfall.High.Street....yoy.change..BRC.Springboard)], 1), 1), "%"), color = "green", icon = icon("male")),
+                          valueBox(subtitle = "Retail Park Footfall (YoY Change)", value = paste0(round(tail(databasemonthly$Footfall.Retail.Park....yoy.change..BRC.Springboard[!is.na(databasemonthly$Footfall.Retail.Park....yoy.change..BRC.Springboard)], 1), 1), "%"), color = "green", icon = icon("walking")),
+                          valueBox(subtitle = "Shopping Centre Footfall (YoY Change)", value = paste0(round(tail(databasemonthly$Footfall.Shopping.Centre....yoy.change..BRC.Springboard[!is.na(databasemonthly$Footfall.Shopping.Centre....yoy.change..BRC.Springboard)], 1), 1), "%"), color = "green", icon = icon("female"))),
                           
                         fluidRow(
-                          valueBox(subtitle = "REM Employment (YoY Change)", value = paste0(round(tail(REM_emp[!is.na(REM_emp)], 1), 1), "%"), color = "aqua", icon = icon("user-graduate")),
-                          valueBox(subtitle = "REM Hours (YoY Change)", value = paste0(round(tail(REM_hrs[!is.na(REM_hrs)], 1), 1), "%"), color = "aqua", icon = icon("clock")),
-                          valueBox(subtitle = "REM Stores (YoY Change)", value = paste0(round(tail(REM_stores[!is.na(REM_stores)], 1), 1), "%"), color = "aqua", icon = icon("building"))),
+                          valueBox(subtitle = "REM Employment (YoY Change)", value = paste0(round(tail(databasemonthly$REM...Employment[!is.na(databasemonthly$REM...Employment)], 1), 1), "%"), color = "aqua", icon = icon("user-graduate")),
+                          valueBox(subtitle = "REM Hours (YoY Change)", value = paste0(round(tail(databasemonthly$REM...Hours[!is.na(databasemonthly$REM...Hours)], 1), 1), "%"), color = "aqua", icon = icon("clock")),
+                          valueBox(subtitle = "REM Stores (YoY Change)", value = paste0(round(tail(databasemonthly$REM...Stores[!is.na(databasemonthly$REM...Stores)], 1), 1), "%"), color = "aqua", icon = icon("building"))),
                         
                         fluidRow(
-                          valueBox(subtitle = "DRI Website Visits (YoY Change)", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Growth in retailer website visits (yoy %)`[!is.na(DRI_Master$`BRC-Hitwise Growth in retailer website visits (yoy %)`)], 1), 1), "%"), color = "blue", icon = icon("desktop")),
-                          valueBox(subtitle = "DRI Mobile Share", value = paste0(round(tail(DRI_Master$`BRC-Hitwise Mobile Share of retail website visits (%)`[!is.na(DRI_Master$`BRC-Hitwise Mobile Share of retail website visits (%)`)], 1), 1), "%"), color = "blue", icon = icon("mobile")))),
+                          valueBox(subtitle = "DRI Website Visits (YoY Change)", value = paste0(round(tail(databasemonthly$BRC.Hitwise.Growth.in.retailer.website.visits..yoy...[!is.na(databasemonthly$BRC.Hitwise.Growth.in.retailer.website.visits..yoy...)], 1), 1), "%"), color = "blue", icon = icon("desktop")),
+                          valueBox(subtitle = "DRI Mobile Share", value = paste0(round(tail(databasemonthly$BRC.Hitwise.Mobile.Share.of.retail.website.visits....[!is.na(databasemonthly$BRC.Hitwise.Mobile.Share.of.retail.website.visits....)], 1), 1), "%"), color = "blue", icon = icon("mobile")))),
                         
                         
                       tabItem(tabName = "extstats",
