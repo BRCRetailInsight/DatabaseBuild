@@ -110,8 +110,8 @@ ui <- dashboardPage(skin = "blue",
                         
                         fluidRow(
                           valueBox(subtitle = paste("Unempoyment Rate","  ", format(index(tail(unemp$`Unemployment Rate UK`, 1)), "%Y %B")), value = paste0(tail(unemp$`Unemployment Rate UK`, 1), "%"), color = "aqua", icon = icon("user-tie")),
-                          valueBox(subtitle = paste("Jobs Whole Economy (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_all, 1)), format = "%d-%m-%Y")), value = prettyNum(tail(empjobsquarterly_all + selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("users")),
-                          valueBox(subtitle = paste("Jobs Retail (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_retail, 1)), format = "%Y-%m-%d")), value = prettyNum(tail(empjobsquarterly_retail + selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("people-carry"))),
+                          valueBox(subtitle = paste("Jobs Whole Economy (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_all, 1)), format = "%d-%m-%Y")), value = prettyNum(tail(empjobsquarterly_all, 1) + tail(selfjobsquarterly_all, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("users")),
+                          valueBox(subtitle = paste("Jobs Retail (000's)","  ", as.yearqtr(index(tail(empjobsquarterly_retail, 1)), format = "%Y-%m-%d")), value = prettyNum(tail(empjobsquarterly_retail, 1) + tail(selfjobsquarterly_retail, 1), big.mark = ",", scientific = FALSE), color = "aqua", icon = icon("people-carry"))),
                         
                         fluidRow(
                           valueBox(subtitle = paste("Average Weekly Earnings - Regular Pay (YoY Change)","  ", format(index(tail(awe$`Regular Pay YoY Growth`, 1)), "%Y %B")), value = paste0(tail(awe$`Regular Pay YoY Growth`, 1), "%"), color = "blue", icon = icon("money-bill-wave")),

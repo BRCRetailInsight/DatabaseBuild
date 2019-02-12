@@ -122,6 +122,7 @@ download.file(url,loc.download,mode = "wb")
 empjobs <- "empjobs.xls"
 empjobs_all <- read_excel(empjobs, sheet = 2, range = cell_limits(c(6, 86), c(NA, 86)))
 empjobs_all <- head(empjobs_all, -2)
+empjobs_all$X__1 <- as.numeric(empjobs_all$X__1)
 
 dates <- seq(as.Date("1978-06-20"), length = nrow(empjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -139,6 +140,7 @@ download.file(url,loc.download,mode = "wb")
 selfjobs <- "selfjobs.xls"
 selfjobs_all <- read_excel(selfjobs, sheet = 2, range = cell_limits(c(6, 86), c(NA, 86)))
 selfjobs_all <- head(selfjobs_all, -2)
+selfjobs_all$X__1 <- as.numeric(selfjobs_all$X__1)
 
 dates <- seq(as.Date("1996-03-20"), length = nrow(selfjobs_all), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -1624,7 +1626,7 @@ GVAwales <- xts(x = GVAwales, order.by=dates)
 colnames(GVAwales) <- "GVA - Wales"
 
 #Scotland
-GVAscot <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1450, 5), c(1450)), col_names = FALSE)
+GVAscot <- read_excel(gva_region, sheet = 3, range = cell_limits(c(1450, 5), c(1450, NA)), col_names = FALSE)
 GVAscot <- t(GVAscot)
 GVAscot <- xts(x = GVAscot, order.by=dates)
 colnames(GVAscot) <- "GVA - Scotland"
@@ -1988,7 +1990,7 @@ RSM_alldf$embargo <- as.Date(RSM_alldf$embargo)
 RSM_all_embargo_df <- RSM_alldf %>%
   filter(RSM_alldf$date <= Sys.Date() & RSM_alldf$embargo <= Sys.Date() | (RSM_alldf$date <= "2019-01-31" & is.na(RSM_alldf$embargo)))
 
-rsmdates <- seq(as.Date("2006-12-01"), length=nrow(RSM_all_embargo), by="months")
+rsmdates <- seq(as.Date("2006-12-01"), length=nrow(RSM_all_embargo_df), by="months")
 rsmdates <- LastDayInMonth(rsmdates)
 RSM_embargo_xts <- xts(x = RSM_all_embargo_df, order.by = rsmdates)
 
