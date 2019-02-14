@@ -1831,7 +1831,7 @@ DRI_Masterdf$embargo <- as.Date(DRI_Masterdf$embargo)
 DRI_Master_embargo <- DRI_Masterdf %>%
   filter(DRI_Masterdf$date <= Sys.Date() & DRI_Masterdf$embargo <= Sys.Date() | (DRI_Masterdf$date <= "2019-01-31" & is.na(DRI_Masterdf$embargo)))
 
-dridates <- seq(as.Date("2006-12-01"), length=nrow(DRI_Master_embargo), by="months")
+dridates <- seq(as.Date("2014-08-01"), length=nrow(DRI_Master_embargo), by="months")
 dridates <- LastDayInMonth(dridates)
 DRI_embargo_xts <- xts(x = DRI_Master_embargo, order.by = dridates)
 
@@ -1873,7 +1873,7 @@ REM_df$embargo <- as.Date(REM_df$embargo)
 REM_embargo_df <- REM_df %>%
   filter(REM_df$date <= Sys.Date() & REM_df$embargo <= Sys.Date() | (REM_df$date <= "2019-01-31" & is.na(REM_df$embargo)))
 
-remdates <- seq(as.Date("2006-12-01"), length=nrow(REM_embargo_df), by="months")
+remdates <- seq(as.Date("2008-10-01"), length=nrow(REM_embargo_df), by="months")
 remdates <- LastDayInMonth(remdates)
 REM_embargo_xts <- xts(x = REM_embargo_df, order.by = remdates)
 
@@ -1925,7 +1925,7 @@ FF_df$embargo <- as.Date(FF_df$embargo)
 FF_embargo_df <- FF_df %>%
   filter(FF_df$date <= Sys.Date() & FF_df$embargo <= Sys.Date() | (FF_df$date <= "2019-01-31" & is.na(FF_df$embargo)))
 
-ffdates <- seq(as.Date("2006-12-01"), length=nrow(FF_embargo_df), by="months")
+ffdates <- seq(as.Date("2010-11-01"), length=nrow(FF_embargo_df), by="months")
 ffdates <- LastDayInMonth(ffdates)
 FF_embargo_xts <- xts(x = FF_embargo_df, order.by = ffdates)
 
@@ -1990,7 +1990,7 @@ RSM_alldf$embargo <- as.Date(RSM_alldf$embargo)
 RSM_all_embargo_df <- RSM_alldf %>%
   filter(RSM_alldf$date <= Sys.Date() & RSM_alldf$embargo <= Sys.Date() | (RSM_alldf$date <= "2019-01-31" & is.na(RSM_alldf$embargo)))
 
-rsmdates <- seq(as.Date("2006-12-01"), length=nrow(RSM_all_embargo_df), by="months")
+rsmdates <- seq(as.Date("1995-01-01"), length=nrow(RSM_all_embargo_df), by="months")
 rsmdates <- LastDayInMonth(rsmdates)
 RSM_embargo_xts <- xts(x = RSM_all_embargo_df, order.by = rsmdates)
 
