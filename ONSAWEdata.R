@@ -1,6 +1,4 @@
 
-#### Average Weekly Earnings ####
-
 # Time Series Definitions
 
 # "KAB9" = Total Pay
@@ -24,3 +22,4 @@ colnames(awe) <- c("Total Pay", "Total Pay YoY Growth", "Total Pay 3-month avera
                    "Regular Pay", "Regular Pay YoY Growth", "Regular Pay 3-month average YoY Growth",
                    "Real Total Pay", "Real Total Pay YoY Growth", "Real Total Pay 3-month average YoY Growth",
                    "Real Regular Pay", "Real Regular Pay YoY Growth", "Real Regular Pay 3-month average YoY Growth")
+

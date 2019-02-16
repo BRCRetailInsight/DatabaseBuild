@@ -1,6 +1,5 @@
 # ONS Consumer Price Inflation Annual Data (MM23) - Definitions
 
-
 # "D7G7" = All Items
 
 ###ALL FOOD

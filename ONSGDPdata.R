@@ -1,4 +1,3 @@
-
 #### Monthly GDP Data ####
 
 # Time Series Definitions
@@ -33,7 +32,7 @@ url <- "https://www.ons.gov.uk/file?uri=/economy/grossdomesticproductgdp/dataset
 loc.download <- "gva_all.xls"
 download.file(url,loc.download,mode = "wb")
 gva_all <- "gva_all.xls"
-gva_all <- read_excel(gva_all, sheet = 3, range = "D46:D132")
+gva_all <- read_excel(gva_all, sheet = 3, range = cell_limits(c(46, 4), c(NA, 4)))
 
 dates <- seq(as.Date("1997-03-20"), length = nrow(gva_all), by = "quarters")
 dates <- LastDayInMonth(dates)
@@ -42,6 +41,6 @@ colnames(GVAquarterly_all) <- "GVA Quarterly - Whole Economy (£m)"
 
 #GVA Retail (CP £m)
 gva_retail <- "gva_all.xls"
-gva_retail <- read_excel(gva_retail, sheet = 3, range = "CY46:CY132")
+gva_retail <- read_excel(gva_retail, sheet = 3, range = cell_limits(c(46, 103), c(NA, 103)))
 GVAquarterly_retail <- xts(x = gva_retail, order.by=dates)
 colnames(GVAquarterly_retail) <- "GVA Quarterly - Retail (£m)"

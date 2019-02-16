@@ -1,4 +1,3 @@
-
 #### Unemployment & Employment Data ####
 
 #Time Series - Unemployment Definitions
@@ -48,4 +47,5 @@ colnames(employ) <- c("Employment Total UK", "Employment Total North East", "Emp
                       "Employment Total East", "Employment Total London", "Employment Total South East",
                       "Employment Total South West", "Employment Total England", "Employment Total Wales",
                       "Employment Total Scotland", "Employment Total Northern Ireland")
+
 

@@ -1,4 +1,6 @@
 
+#### NOMIS Data ####
+
 #Workforce Jobs
 nomiswfjobs <- fromJSON("https://www.nomisweb.co.uk/api/v01/dataset/NM_189_1.data.json?geography=2092957699,2092957698,2092957701,2092957700&industry=146800687&employment_status=1&measure=1,2&measures=20100", flatten = TRUE)
 nomiswfjobs <- as.data.frame(nomiswfjobs$obs)

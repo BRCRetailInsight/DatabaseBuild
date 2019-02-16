@@ -1,5 +1,4 @@
 
-
 #### ASHE Data ####
 
 # Whole Economy Time-Series
@@ -11,9 +10,9 @@ ashe <- "ashe.csv"
 ashe_all <- read.csv(ashe, header = TRUE, sep = ",")
 ashe_all <- ashe_all %>%
   filter(MEASURES_NAME == "Value")
-ashe_all2 <- dplyr::select(ashe_all, c(2, 8, 14, 26, 33))
+ashe_all2 <- select(ashe_all, c(2, 8, 14, 26, 33))
 ashe_all2$Title <- paste(ashe_all2$GEOGRAPHY_NAME, ashe_all2$SEX_NAME, ashe_all2$ITEM_NAME, sep = " ")
-ashe_all2 <- dplyr::select(ashe_all2, c(DATE_NAME, Title, OBS_VALUE))
+ashe_all2 <- select(ashe_all2, c(DATE_NAME, Title, OBS_VALUE))
 ashe_all3 <- melt(ashe_all2, id = c("DATE_NAME", "Title"))
 ashe_region <- cast(ashe_all3, DATE_NAME~Title+variable)
 asheyears <- seq(as.Date("1997-12-31"), length = 22, by = "years")
