@@ -124,7 +124,8 @@ names(duration)[1]="var_name"
 duration=melt(duration, id.vars = c("var_name"))
 duration$var_name=paste0(duration[,1],"_",duration[,2])
 duration=duration[,c(1,3)]
-duration_t=setNames(data.frame(t(duration[,-1])), duration[,1])
+duration_t=data.frame(t(duration))
+duration_t=setNames(duration_t[-1,],duration[,1])
 
 names(page)[1]="var_name"
 page=melt(page, id.vars = c("var_name"))
@@ -253,7 +254,8 @@ for(j in files_2){
   duration=melt(duration, id.vars = c("var_name"))
   duration$var_name=paste0(duration[,1],"_",duration[,2])
   duration=duration[,c(1,3)]
-  duration_t=setNames(data.frame(t(duration[,-1])), duration[,1])
+  duration_t=data.frame(t(duration))
+  duration_t=setNames(duration_t[-1,],duration[,1])
   
   names(page)[1]="var_name"
   page=melt(page, id.vars = c("var_name"))
@@ -360,7 +362,8 @@ for(j in files_3){
   duration=melt(duration, id.vars = c("var_name"))
   duration$var_name=paste0(duration[,1],"_",duration[,2])
   duration=duration[,c(1,3)]
-  duration_t=setNames(data.frame(t(duration[,-1])), duration[,1])
+  duration_t=data.frame(t(duration))
+  duration_t=setNames(duration_t[-1,],duration[,1])
   
   names(page)[1]="var_name"
   page=melt(page, id.vars = c("var_name"))
@@ -576,6 +579,7 @@ names_match=names(DRI)[which(!names(DRI)%in%names(DRI_new))]
 DRI_old=DRI[which(DRI$Date<as.Date("2015-12-01")),]
 
 require(plyr)
+require(dplyr)
 DRI_Master=rbind.fill(DRI_old,DRI_new)
 
 write.csv(DRI_Master,"DRI Master.csv")

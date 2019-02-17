@@ -44,3 +44,18 @@ source("ONSRegionalGVAData.R") #yes
 source("ONSRSIData.R")
 
 #BRC data series
+
+source("BRCRSMData.R") #yes
+source("BRCFootfallData.R") #yes
+source("BRCREMData.R") #YES
+source("BRCSPIData.R")# YES
+source("BRCDRIData.R")
+
+#File merge
+source("FileMerge.R")
+
+#prepare data for maps
+source("MapData.R")
+
+#add release dates of monitors
+source("ReleaseCalendar.R")
