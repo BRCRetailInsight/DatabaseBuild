@@ -15,8 +15,7 @@ colnames(REM) <- c("REM - Employment", "REM - FT Employment 3-mth", "REM - FT Ho
 
 rem_embargo <- data.frame(
   id = as.numeric(123:135),
-  embargo = as.Date(c("2019-01-24", "2019-04-25", "2019-04-25", "2019-04-25", "2019-07-25", "2019-07-25", "2019-07-25", "2019-10-24", "2019-10-24", "2019-10-24", "2020-01-23", "2020-01-23", "2020-01-23")
-  ))
+  embargo = as.Date(embargoes$REM_embargo,"%d/%m/%y"))
 
 row.names(REM) <- 1:nrow(REM)
 

@@ -26,8 +26,7 @@ names(FF)[9]="Footfall Retail Park 3 month average (% yoy change):BRC-Springboar
 
 ff_embargo <- data.frame(
   id = as.numeric(97:110),
-  embargo = as.Date(c("2018-12-10", "2019-01-14", "2019-02-11", "2019-03-11", "2019-04-15", "2019-05-13", "2019-06-10", "2019-07-15", "2019-08-12", "2019-09-09", "2019-10-14", "2019-11-11", "2019-12-09", "2020-01-13")
-  ))
+  embargo = as.Date(FF_embargo,"%d/%m/%y"))
 
 FF$id <- as.numeric(row.names(FF))
 

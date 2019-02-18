@@ -6,7 +6,7 @@ source("DRIData.R")
 DRI_Master=read.csv("DRI Master.csv")
 DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Total.Retail_Total.Retail_Total.Visits")]
 
-DRI_Master=change(DRI_Master,Var="Total.Retail_Total.Retail_Total.Visits" ,TimeVar="date",NewVar = paste("Visit_growth", sep="_"),slideBy=-12, type="percent")
+DRI_Master=DataCombine::change(DRI_Master,Var="Total.Retail_Total.Retail_Total.Visits" ,TimeVar="date",NewVar = paste("Visit_growth", sep="_"),slideBy=-12, type="percent")
 
 DRI_Master=DRI_Master[,c("Mobile_Total.Retail_Share","Visit_growth")]
 DRI_Master$date<-(seq(ISOdate(2014,08,1), by = "month", length.out = nrow(DRI_Master)))
@@ -16,8 +16,7 @@ DRI_Master[,c("BRC-Hitwise Mobile Share of retail website visits (%)")]=DRI_Mast
 
 dri_embargo <- data.frame(
   id = as.numeric(52:65),
-  embargo = as.Date(c("2018-12-06", "2019-01-11", "2019-02-07", "2019-03-07", "2019-04-11", "2019-05-09", "2019-06-06", "2019-07-11", "2019-08-08", "2019-09-05", "2019-10-10", "2019-11-07", "2019-12-05", "2020-01-10")
-  ))
+  embargo = as.Date(embargoes$DRI_embargo,"%d/%m/%y"))
 
 DRI_Master$id <- as.numeric(row.names(DRI_Master))
 

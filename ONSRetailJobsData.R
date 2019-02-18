@@ -1,8 +1,10 @@
 #### JOBS03 & JOBS04 Data ####
 
 #Employee Jobs
-url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/employeejobsbyindustryjobs03/current/jobs03sep2018.xls"
-loc.download <- "empjobs.xls"
+url <- paste0("https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/employeejobsbyindustryjobs03/current/jobs03",jobs_quarter,".xls")
+
+             
+             loc.download <- "empjobs.xls"
 download.file(url,loc.download,mode = "wb")
 empjobs <- "empjobs.xls"
 empjobs_all <- read_excel(empjobs, sheet = 2, range = cell_limits(c(6, 86), c(NA, 86)))
@@ -19,7 +21,7 @@ empjobsquarterly_retail <- xts(x = empjobs_retail, order.by=dates)
 colnames(empjobsquarterly_retail) <- "Employee Jobs - Retail"
 
 #Self-Employed Jobs
-url <- "https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/selfemploymentjobsbyindustryjobs04/current/jobs04sep2018.xls"
+url <- paste0("https://www.ons.gov.uk/file?uri=/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/datasets/selfemploymentjobsbyindustryjobs04/current/jobs04",jobs_quarter,".xls")
 loc.download <- "selfjobs.xls"
 download.file(url,loc.download,mode = "wb")
 selfjobs <- "selfjobs.xls"

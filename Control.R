@@ -1,5 +1,5 @@
 
-# load all required packages
+### load all required packages
 
 packages=c("pdfetch",
           "xts",
@@ -24,38 +24,54 @@ packages=c("pdfetch",
           "DT",
           "leaflet.extras",
           "timevis",
-          "bindrcpp")
+          "bindrcpp",
+          "DataCombine")
           
 lapply(packages, require, character.only = TRUE)        
 
-source("BoEdata.R") # yes
-source("ONSGDPdata.R")# yes
-source("ONSAWEdata.R")# yes
-source("ONSLabourMarketData.R") #yes
-source("NomisWFJobsData.R") # yes
-source("ONSShopsData.R") # yes
-require(dplyr)
-source("ASHEData.R") #yes
-source("LandRegistryHPData.R") #yes
-source("ONSCPIData.R")#yes
-source("ProductivityData.R")#yes
-source("ONSRetailJobsData.R")#yes
-source("ONSRegionalGVAData.R") #yes
-source("ONSRSIData.R")
+###load embargo dates
 
-#BRC data series
+embargoes=read.csv("embargodates.csv")
 
-source("BRCRSMData.R") #yes
-source("BRCFootfallData.R") #yes
-source("BRCREMData.R") #YES
-source("BRCSPIData.R")# YES
-source("BRCDRIData.R")
 
-#File merge
-source("FileMerge.R")
+### Run files for different dataseries
 
-#prepare data for maps
-source("MapData.R")
+    source("BoEdata.R")
+    source("ONSGDPdata.R")
+    source("ONSAWEdata.R")
+    source("ONSLabourMarketData.R")
+    source("NomisWFJobsData.R")
+    source("ONSShopsData.R")
+    
+    require(dplyr)
+    source("ASHEData.R") 
+    source("LandRegistryHPData.R") 
+    source("ONSCPIData.R")
+    source("ProductivityData.R")
+    
+    #set latest quarter for jobs file e.g. "sep2018" - data comes out with a 3 month lag and is only produced quarterly
+    jobs_quarter="dec2018"
+    source("ONSRetailJobsData.R")
+    source("ONSRegionalGVAData.R") 
+    source("ONSRSIData.R")
+    
+    #BRC data series
+    
+    source("BRCRSMData.R")
+    source("BRCFootfallData.R")
+    source("BRCREMData.R") 
+    source("BRCSPIData.R")
+    source("BRCDRIData.R")
+    
+    #File merge
+    source("FileMerge.R")
+    
+    #prepare data for maps
+    source("MapData.R")
+    
+    #add release dates of monitors
+    source("ReleaseCalendar.R")
 
-#add release dates of monitors
-source("ReleaseCalendar.R")
+
+
+
