@@ -2035,7 +2035,6 @@ spi_all_show <- merge(spi_df, spi_embargo, by = "id", all = TRUE)
 spi_all_show <- spi_all_show[order(spi_all_show$id),]
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(spi_all_show), by="months")
-dates <- LastDayInMonth(dates)
 spi_all_show <- xts(x=spi_all_show, order.by=dates)
 
 spi_all_showdf <- data.frame(date = index(spi_all_show), coredata(spi_all_show))
@@ -2044,11 +2043,11 @@ spi_all_showdf$embargo <- as.Date(spi_all_showdf$embargo)
 
 spi_all_embargo_df <- spi_all_showdf %>%
   filter(spi_all_showdf$date <= Sys.Date() & spi_all_showdf$embargo <= Sys.Date() | (spi_all_showdf$date <= "2019-01-31" & is.na(spi_all_showdf$embargo)))
+spi_all_embargo_df$date <- as.Date(LastDayInMonth(spi_all_embargo_df$date))
 
 dates <- seq(as.Date("2006-12-01"), length=nrow(spi_all_embargo_df), by="months")
 dates <- LastDayInMonth(dates)
 spi_all_embargo_xts <- xts(x=spi_all_embargo_df, order.by = dates)
-
 
 #### Database Merge ####
 
